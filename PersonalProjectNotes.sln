@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36327.8 d17.14
+VisualStudioVersion = 17.14.36327.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalProjectNotes", "PersonalProjectNotes\PersonalProjectNotes.csproj", "{6FE6AB20-93D6-4F53-9C16-6E0464EBA3D4}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalProjectNotes.Domain", "PersonalProjectNotes.Domain\PersonalProjectNotes.Domain.csproj", "{E7ED3682-C417-BD2E-3D01-3E86DA44C574}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalProjectNotes.Repositories", "PersonalProjectNotes.Repositories\PersonalProjectNotes.Repositories.csproj", "{B11386FF-BA6D-6D34-FDA3-2A32ADEDFC12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalProjectNotes.Services", "PersonalProjectNotes.Services\PersonalProjectNotes.Services.csproj", "{3783F572-E742-8C8F-95DD-3B30BDE2A7AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{B11386FF-BA6D-6D34-FDA3-2A32ADEDFC12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B11386FF-BA6D-6D34-FDA3-2A32ADEDFC12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B11386FF-BA6D-6D34-FDA3-2A32ADEDFC12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3783F572-E742-8C8F-95DD-3B30BDE2A7AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3783F572-E742-8C8F-95DD-3B30BDE2A7AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3783F572-E742-8C8F-95DD-3B30BDE2A7AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3783F572-E742-8C8F-95DD-3B30BDE2A7AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

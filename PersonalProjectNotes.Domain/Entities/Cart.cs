@@ -1,0 +1,23 @@
+﻿using PersonalProjectNotes.Domain.Enums;
+using System.Collections.Generic;
+
+namespace PersonalProjectNotes.Domain.Entities
+{
+    public class Cart
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime DueDate { get; set; }
+        public Guid BoardId { get; set; }
+        public Guid ListCartId { get; set; }
+        public ListCart ListCart { get; set; }
+        public Guid UserId { get; set; }
+        public ApplicationUser User { get; set; }
+        public PriorityNote PriorityNote { get; set; }
+        public StatusNote StatusNote { get; set; }
+        public UserAction Action { get; set; }
+        public List<ActivityCart> ActivityCart { get; set; } = new List<ActivityCart>();
+    }
+}
