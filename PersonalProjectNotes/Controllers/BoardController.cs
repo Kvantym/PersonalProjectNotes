@@ -37,17 +37,27 @@ namespace PersonalProjectNotes.Controllers
             await _boardService.DeleteBoard(boardId, User.GetUserId());
             return Ok(new { message = "Board deleted successfully" });
         }
-        [HttpGet("boart-by-id/{boardId}")]
+        [Authorize]
+        [HttpGet("board-by-id/{boardId}")]
         public async Task<IActionResult> GetBoardById(Guid boardId)
         {
-            return Ok( await _boardService.GetBoard(boardId, User.GetUserId()));
+            return Ok(await _boardService.GetBoard(boardId, User.GetUserId()));
         }
+
         [Authorize]
-        [HttpGet("boart-by-user")]
+        [HttpGet("board-by-user")] 
         public async Task<IActionResult> GetBoardsByUser()
         {
-            return Ok( await _boardService.GetBoards(User.GetUserId()));
+            return Ok(await _boardService.GetBoards(User.GetUserId()));
         }
+        [Authorize]
+        [HttpGet("get-activity-board/{boardId}")]
+        public async Task<IActionResult> GetBoardsByUser(Guid boardId)
+        {
+            var result = await _boardService.GetActivityBoardById(boardId);
+            return Ok(result);
+        }
+
 
     }
 }

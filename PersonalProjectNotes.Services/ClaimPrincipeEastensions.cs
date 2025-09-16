@@ -1,5 +1,4 @@
-﻿
-using PersonalProjectNotes.Services.Exceptions;
+﻿using PersonalProjectNotes.Services.Exceptions;
 using System.Security.Claims;
 
 namespace PersonalProjectNotes.Services
@@ -8,14 +7,17 @@ namespace PersonalProjectNotes.Services
     {
         public static Guid GetUserId(this ClaimsPrincipal user)
         {
+            var allClaims = string.Join(", ", user.Claims.Select(c => $"{c.Type}={c.Value}"));
+            Console.WriteLine("Claims: " + allClaims);
+
             var userIdString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
-      ?? throw new AuthorizationException("Користувача не знайдено");
+                ?? throw new AuthorizationException("Користувача не знайдено");
 
             if (!Guid.TryParse(userIdString, out var userId))
                 throw new AuthorizationException("Неправильний формат Id користувача");
 
             return userId;
         }
+
     }
-    
 }

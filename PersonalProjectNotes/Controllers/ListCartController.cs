@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PersonalProjectNotes.Domain.Request.ListCart;
 using PersonalProjectNotes.Services;
 using PersonalProjectNotes.Services.Interfaces;
+using PersonalProjectNotes.Services.Services;
 
 namespace PersonalProjectNotes.Controllers
 {
@@ -37,10 +38,17 @@ namespace PersonalProjectNotes.Controllers
            await _listCartService.DeleteAsync(listCartId, User.GetUserId());
            return Ok(new { message = "CartList deleted successfully" });
         }
+        [Authorize]
         [HttpGet("list-cart-by-id/{listCartId}")]
         public async Task<IActionResult> GetListCart(Guid listCartId)
         {
             return Ok( await _listCartService.GetListCartAsync(listCartId));
+        }
+        [Authorize]
+        [HttpGet("list-cart-by-boardid/{boardId}")]
+        public async Task<IActionResult> GetListCartByBoardId(Guid boardId)
+        {
+            return Ok(await _listCartService.GetLiastCartByBoardId(boardId));
         }
         [Authorize]
         [HttpGet("list-cart-by-user")]
@@ -56,5 +64,14 @@ namespace PersonalProjectNotes.Controllers
            await _listCartService.MoveToBoard(cartListId, boardId, User.GetUserId());
            return Ok(new { message = "CartList move to board successfully" });
         }
+        [Authorize]
+        [HttpGet("get-activity-listcart/{cartListId}")]
+        public async Task<IActionResult> GetActivityFromCart(Guid cartListId)
+        {
+            var result = await _listCartService.GetListCartActivityByListId(cartListId);
+            return Ok(result);
+        }
+   
+
     }
 }

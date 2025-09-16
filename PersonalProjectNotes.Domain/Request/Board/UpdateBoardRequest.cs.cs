@@ -3,7 +3,7 @@
     public class UpdateBoardRequest
     {
         public string Name { get; set; }
-        private DateTime _updatedAt = DateTime.UtcNow;
-        public DateTime UpdatedAt { get => _updatedAt;}
+        
+        public DateTime UpdatedAt { get; set; }
     }
 }

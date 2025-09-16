@@ -12,8 +12,8 @@ using PersonalProjectNotes.Data;
 namespace PersonalProjectNotes.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250827090341_AddMissingColumns")]
-    partial class AddMissingColumns
+    [Migration("20250905210900_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -347,11 +347,12 @@ namespace PersonalProjectNotes.Data.Migrations
                     b.Property<int>("Action")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("BoardId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
@@ -471,7 +472,7 @@ namespace PersonalProjectNotes.Data.Migrations
                     b.HasOne("PersonalProjectNotes.Domain.Entities.Board", "Board")
                         .WithMany("ActivityBoards")
                         .HasForeignKey("BoardId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Board");
@@ -482,7 +483,7 @@ namespace PersonalProjectNotes.Data.Migrations
                     b.HasOne("PersonalProjectNotes.Domain.Entities.Cart", "Cart")
                         .WithMany("ActivityCart")
                         .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Cart");
@@ -493,7 +494,7 @@ namespace PersonalProjectNotes.Data.Migrations
                     b.HasOne("PersonalProjectNotes.Domain.Entities.ListCart", "ListCart")
                         .WithMany("ActivityListCarts")
                         .HasForeignKey("ListCartId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ListCart");
@@ -515,7 +516,7 @@ namespace PersonalProjectNotes.Data.Migrations
                     b.HasOne("PersonalProjectNotes.Domain.Entities.ListCart", "ListCart")
                         .WithMany("Carts")
                         .HasForeignKey("ListCartId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("PersonalProjectNotes.Domain.Entities.ApplicationUser", "User")
@@ -534,7 +535,7 @@ namespace PersonalProjectNotes.Data.Migrations
                     b.HasOne("PersonalProjectNotes.Domain.Entities.Board", "Board")
                         .WithMany("ListCart")
                         .HasForeignKey("BoardId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("PersonalProjectNotes.Domain.Entities.ApplicationUser", "User")

@@ -13,6 +13,8 @@ namespace PersonalProjectNotes.Services.DI
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IBoardService, BoardService>();
             services.AddScoped<IListCartService, ListCartService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IActivityService, ActivityService>();
             return services;
         }
     }

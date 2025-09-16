@@ -7,13 +7,18 @@ namespace PersonalProjectNotes.Services.Interfaces
 {
     public interface IListCartService
     {
-        public Task CreateAsync(CreateListCartRequest listCart, Guid userID, Guid boardId);
-        public Task UpdateAsync(Guid cartListId, UpdateListCartRequest listCart, Guid userID);
-        public Task DeleteAsync(Guid listCartId, Guid userID);
+        public Task CreateAsync(CreateListCartRequest listCartRequest, Guid userId, Guid boardId);
+        public Task UpdateAsync(Guid cartListId, UpdateListCartRequest listCartRequest, Guid userId);
+        public Task DeleteAsync(Guid listCartId, Guid userId);
         public Task<ListCartResponse> GetListCartAsync(Guid listCartId);
         public Task<List<ListCartResponse>> GetListCartsAsync(Guid userId);
-        public Task AddActivityToCartList(Guid CartListID, UserAction Action, Guid UserID);
-        public Task MoveToBoard(Guid listCartId, Guid boardId, Guid userID);
+      //  public Task AddActivityToCartList(Guid cartListId, UserAction userAction, Guid userId, ListCart? previousCartListState = null, string? previousBoardName = null, string? targetBoardName = null);
+        public Task MoveToBoard(Guid listCartId, Guid boardId, Guid userId);
+        public Task<ListCart> GetOrThrowListCart(Guid listCartId);
+        public Task<List<Cart>> GetOrThrowGartsByList(Guid listCartId);
+        public Task<List<ListCart>> GetLiastCartByBoardId(Guid boardId);
+        public Task<List<ActivityListCartResponse>> GetListCartActivityByListId(Guid cartListId);
+        public Task<ListCart> GetListCartById(Guid cartListId);
 
     }
 }

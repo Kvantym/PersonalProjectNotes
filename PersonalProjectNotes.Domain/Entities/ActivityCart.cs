@@ -4,5 +4,6 @@
     {
         public Guid CartId { get; set; }
         public Cart Cart { get; set; }
+    
     }
 }

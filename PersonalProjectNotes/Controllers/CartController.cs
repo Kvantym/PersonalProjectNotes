@@ -17,10 +17,10 @@ namespace PersonalProjectNotes.Controllers
             _cartService = cartService;
         }
         [Authorize]
-        [HttpPost("create-cart")]
-        public async Task<IActionResult> AddCart([FromBody] CreateCartRequest createCartRequest)
+        [HttpPost("create-cart/{cartListId}")]
+        public async Task<IActionResult> AddCart([FromBody] CreateCartRequest createCartRequest, Guid cartListId)
         {
-            await _cartService.CreateCart(createCartRequest, User.GetUserId());
+            await _cartService.CreateCart(createCartRequest, User.GetUserId(), cartListId);
             return Ok(new { message = "Cart created successfully" });
         }
         [Authorize]
@@ -37,10 +37,18 @@ namespace PersonalProjectNotes.Controllers
             await _cartService.DeleteCart(cartId, User.GetUserId());
             return Ok(new { message = "Cart deleted successfully" });
         }
+        [Authorize]
         [HttpGet("{cartId}")]
         public async Task<IActionResult> GetCart(Guid cartId)
         {
             var result = await _cartService.GetCart(cartId);
+            return Ok(result);
+        }
+        [Authorize]
+        [HttpGet("carts-by-list-cartId/{listcartId}")]
+        public async Task<IActionResult> GetCartByListCartId([FromRoute] Guid listcartId)
+        {
+            var result = await _cartService.GetCartsByListCart(listcartId);
             return Ok(result);
         }
         [Authorize]
@@ -51,11 +59,19 @@ namespace PersonalProjectNotes.Controllers
             return Ok(result);
         }
         [Authorize]
-        [HttpGet("move-to-cart-list{CartListId}")]
+        [HttpPut("move-to-cart-list{CartListId}")]
         public async Task<IActionResult> MoveToCartList(Guid cartId, Guid CartListId)
         {
            await _cartService.MoveToCardList(cartId, CartListId,User.GetUserId());
             return Ok(new { message = "Cart move to list successfully" });
         }
+        [Authorize]
+        [HttpGet("get-activity-cart/{cartId}")]
+        public async Task<IActionResult> GetActivityFromCart(Guid cartId)
+        {
+          var result =  await _cartService.GetActivityCart(cartId);
+            return Ok(result);
+        }
+
     }
 }

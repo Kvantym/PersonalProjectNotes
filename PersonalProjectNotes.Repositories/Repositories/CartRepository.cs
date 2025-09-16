@@ -37,17 +37,26 @@ namespace PersonalProjectNotes.Repositories.Repositories
             return await _context.Carts.Include(ac=> ac.ActivityCart)
                 .FirstOrDefaultAsync(c => c.Id == cartId);
         }
-
-
-        public async Task<List<Cart>> GetCarts(Guid UserID)
+        public async Task<List<Cart>> GetCartsByCartList(Guid cartListId)
         {
-            return await _context.Carts.Include(ac=> ac.ActivityCart).Where(c=> c.UserId==UserID).ToListAsync();
+            return await _context.Carts.Where(c => c.ListCartId == cartListId).ToListAsync();
+        }
+
+
+        public async Task<List<Cart>> GetCarts(Guid userID)
+        {
+            return await _context.Carts.Include(ac=> ac.ActivityCart).Where(c=> c.UserId== userID).ToListAsync();
         }
 
         public async Task Update(Cart cart)
         {
             _context.Carts.Update(cart);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<ActivityCart>> GetActivityCart(Guid cartId)
+        {
+            return await _context.ActivitiesCarts.Where(ac => ac.CartId == cartId).ToListAsync();
         }
     }
 }

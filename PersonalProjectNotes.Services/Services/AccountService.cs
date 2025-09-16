@@ -8,6 +8,7 @@ using PersonalProjectNotes.Domain.Request.Account;
 using PersonalProjectNotes.Domain.Response;
 using PersonalProjectNotes.Services.Exceptions;
 using PersonalProjectNotes.Services.Interfaces;
+using System.Data.Entity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -41,34 +42,34 @@ namespace PersonalProjectNotes.Services.Services
             var userrRespons = new UserResponse
             {
                 UserName = user.UserName,
-                Email = user.Email,              
+                Email = user.Email,
+               
             };
             return userrRespons;
         }
 
-
-
-
         public async Task<string> LoginAsync(LoginRequest request)
         {
-          var user = await _userManager.FindByNameAsync(request.Username);
+            var normalizedUsername = request.Username.ToUpper();
+
+            var user = _userManager.Users.FirstOrDefault(u => u.NormalizedUserName == normalizedUsername);
+           
             if (user == null)
             {
-                //exception
+               throw new AuthorizationException("Невірне ім'я користувача.");
             }
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             if (!result.Succeeded)
             {
-                //exception
+               throw new AuthorizationException("Невірний пароль.");
             }
             var token = await GenerateJwtTokenAsync(user);
-            return token;   
+            return token;
 
         }
 
         public async Task<string> RegisterUserAsync(RegisterUserRequest request)
         {
-            // Перевірка, чи користувач вже існує
             var existingUser = await _userManager.FindByNameAsync(request.Username);
             if (existingUser != null)
             {
@@ -81,17 +82,14 @@ namespace PersonalProjectNotes.Services.Services
                 Email = request.Email
             };
 
-            // Створення користувача з паролем
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded)
             {
-                // Об’єднання всіх помилок у рядок для зрозумілого виводу
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new InvalidOperationException($"Створення користувача не вдалося: {errors}");
             }
 
-            // Генерація JWT токена
             var token = await GenerateJwtTokenAsync(user);
             return token;
         }
@@ -113,6 +111,7 @@ namespace PersonalProjectNotes.Services.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName)
             };
 
@@ -123,7 +122,7 @@ namespace PersonalProjectNotes.Services.Services
                 Expires = DateTime.UtcNow.AddHours(12),
                 Issuer = issuer,
                 Audience = audience,
-                SigningCredentials =  new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

@@ -3,7 +3,6 @@ using PersonalProjectNotes.Domain.Enums;
 using PersonalProjectNotes.Domain.Request.ListCart;
 using PersonalProjectNotes.Domain.Response;
 using PersonalProjectNotes.Repositories.Interfaces;
-using PersonalProjectNotes.Repositories.Repositories;
 using PersonalProjectNotes.Services.Exceptions;
 using PersonalProjectNotes.Services.Interfaces;
 
@@ -13,224 +12,176 @@ namespace PersonalProjectNotes.Services.Services
     {
         private readonly IListCartRepository _listCartRepository;
         private readonly ICartRepository _cartRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly ICartService _cartService;
+        private readonly IUserService _userService;
+        private readonly IActivityService _activityService;
+        private readonly IBoardRepository _boardRepository;
 
-        public ListCartService(IListCartRepository listCartRepository, ICartRepository cartRepository, IUserRepository userRepository)
+        public ListCartService(IListCartRepository listCartRepository, ICartRepository cartRepository, ICartService cartService, IUserService userService, IActivityService activityService, IBoardRepository boardRepository)
         {
             _listCartRepository = listCartRepository;
             _cartRepository = cartRepository;
-            _userRepository = userRepository;
+            _cartService = cartService;
+            _userService = userService; ;
+            _activityService = activityService;
+            _boardRepository = boardRepository;
         }
 
-        public async Task AddActivityToCartList(Guid CartListID, UserAction Action, Guid UserID)
-        {
-            var user = await _userRepository.GetByIdAsync(UserID);
-            if (user == null)
-            {
-                throw new NotFoundException($"User with ID {UserID} not found");
-            }
-            var cartList = await _listCartRepository.GetListCart(CartListID);
-            if (cartList == null)
-            {
-                throw new NotFoundException("Cart not found");
-            }
-            if (cartList.UserId == UserID)
-            {
-                var Activity = new ActivityListCart()
-                {
-                    ListCartId = CartListID, 
-                    Action = Action,
-                    UserId = UserID,
-                    ActivityInformation = $"{user.UserName} виконав дію {Action} з карткою {cartList.Name}",
-                    ActivityTime = DateTime.UtcNow,
-                };
-                await _listCartRepository.AddActivity(Activity);
-            }
-        }
-
-        public async Task CreateAsync(CreateListCartRequest listCart, Guid userID, Guid boardId)
+        public async Task CreateAsync(CreateListCartRequest listCartRequest, Guid userID, Guid boardId)
         {
             var cartList = new ListCart
             {
                 UserId = userID,
-                Name = listCart.Name,
+                Name = listCartRequest.Name,
                 BoardId = boardId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
             };
             await _listCartRepository.Create(cartList);
-            await AddActivityToCartList(cartList.Id, UserAction.Create, userID);
+            await _activityService.AddActivityToCartList(cartList.Id, UserAction.Create, userID);
+            await _activityService.AddActivityToBoard(cartList.BoardId,UserAction.CreateListCart, userID, CreatelistCart:cartList);
         }
 
-        public async Task DeleteAsync(Guid listCartId, Guid userID)
+        public async Task DeleteAsync(Guid cartListId, Guid userId)
         {
-            var cartList = await _listCartRepository.GetListCart(listCartId);
-            if (cartList == null)
-            {
-                throw new NotFoundException("ListCart not found");
-            }
-            var carts = await _listCartRepository.GetListCartsByListId(listCartId);
-            if (carts == null)
-            {
-                throw new NotFoundException("Carts not found");
-            }
-            foreach (var cart in carts)
+            var listCart = await GetOrThrowListCart(cartListId);
+
+            var cartsByList = await GetOrThrowGartsByList(cartListId);            
+
+            foreach (var cart in cartsByList)
             {
                 await _cartRepository.Delete(cart);
             }
-            await _listCartRepository.Delete(cartList);
-            await AddActivityToCartList(listCartId, UserAction.Delete, userID);
+
+            await _activityService.AddActivityToBoard(listCart.BoardId,UserAction.DeleteListCart, userId,deleteListCart: listCart);
+
+            await _listCartRepository.Delete(listCart);
         }
 
-        public async Task<ListCartResponse> GetListCartAsync(Guid listCartId)
+        public async Task<ListCartResponse> GetListCartAsync(Guid cartListId)
         {
-            var listCart = await _listCartRepository.GetListCart(listCartId);
-            if (listCart == null) 
-            {
-            throw new NotFoundException("ListCart not Found");
-            }
+            var listCart = await GetOrThrowListCart(cartListId);
+            var carts = await _cartService.GetCarts(listCart.UserId);
 
-            if (listCart == null)
-            {
-                throw new NotFoundException("ListCart not Found");
-            }
-
-            var response = new ListCartResponse
-            {
-                Name = listCart.Name,
-                BoardId = listCart.BoardId,
-                UserId = listCart.UserId,
-
-                Carts = listCart.Carts.Select(c => new CartResponse
-                {
-                    Name = c.Name,
-                    CreatedAt = c.CreatedAt,
-                    UpdatedAt = c.UpdatedAt,
-                    DueDate = c.DueDate,
-                    UserId = c.UserId,
-                    PriorityNote = c.PriorityNote,
-                    StatusNote = c.StatusNote,
-                    Action = c.Action,
-                    ListCartId = c.ListCartId,
-
-                    ActivityCart = c.ActivityCart?.Select(a => new ActivityCartResponse
-                    {
-                        Id = a.Id,
-                        Action = a.Action,
-                        ActivityInformation = a.ActivityInformation,
-                        UserId = a.UserId,
-                        ActivityTime = a.ActivityTime,
-                        CartId = a.CartId,
-                    }).ToList()
-                }).ToList(),
-
-                ActivityListCarts = listCart.ActivityListCarts?.Select(a => new ActivityListCartResponse
-                {
-                    Id = a.Id,
-                    Action = a.Action,
-                    ActivityInformation = a.ActivityInformation,
-                    UserId = a.UserId,
-                    ActivityTime = a.ActivityTime,
-                    ListCartId = a.ListCartId
-                }).ToList()
-            };
-
-
+            var response = CreateListCartResponse(listCart, carts);
             return response;
         }
 
 
         public async Task<List<ListCartResponse>> GetListCartsAsync(Guid userId)
         {
-            var user = await _userRepository.GetByIdAsync(userId);
-            if (user == null)
-            {
-                throw new NotFoundException($"User with ID {userId} not found");
-            }
+            var user = await _userService.GetOrThrowUser(userId);
 
+            var listCarts = await GetThrowListsCartByUser(userId);
+
+            var carts = await _cartService.GetCarts(userId);
+
+            var response = listCarts.Select(listCart => CreateListCartResponse(listCart, carts)).ToList();
+            return response;
+        }
+
+
+        public async Task UpdateAsync(Guid cartListId, UpdateListCartRequest listCartRequest, Guid userID)
+        {
+            var cartList = await GetOrThrowListCart(cartListId);
+
+            var previousCartListState = new ListCart
+            {
+                Name = cartList.Name,               
+                BoardId = cartList.BoardId,
+            };
+
+            cartList.Name = listCartRequest.Name;
+            cartList.UpdatedAt = DateTime.Now;
+
+            await _listCartRepository.Update(cartList);
+            await _activityService.AddActivityToCartList(cartList.Id, UserAction.Update, userID, previousCartListState: previousCartListState);
+        }
+
+        public async Task MoveToBoard(Guid cartListId, Guid boardId, Guid userID)
+        {
+            var listCart = await GetOrThrowListCart(cartListId);
+            var currentListCart = listCart;
+            listCart.BoardId = boardId;
+            var targetBoard = await _boardRepository.GetBoard(boardId);
+            await _listCartRepository.Update(listCart);
+            await _activityService.AddActivityToCartList(listCart.Id, UserAction.MoveToAtherBoard, userID, previousBoardName: currentListCart.Board.Name, targetBoardName: targetBoard.Name);
+        }
+
+        public async Task<List<ListCart>> GetThrowListsCartByUser(Guid userId)
+        {
             var listCarts = await _listCartRepository.GetListCarts(userId);
-            if(listCarts== null)
+            if (listCarts == null)
             {
                 throw new NotFoundException("ListCarts not found");
             }
 
             if (listCarts == null || !listCarts.Any())
-                throw new NotFoundException("ListCarts not found");
-
-            var response = listCarts.Select(listCart => new ListCartResponse
-            {
-                Name = listCart.Name,
-                BoardId = listCart.BoardId,
-                UserId = listCart.UserId,
-
-                Carts = listCart.Carts.Select(c => new CartResponse
-                {
-                    Name = c.Name,
-                    CreatedAt = c.CreatedAt,
-                    UpdatedAt = c.UpdatedAt,
-                    DueDate = c.DueDate,
-                    UserId = c.UserId,
-                    PriorityNote = c.PriorityNote,
-                    StatusNote = c.StatusNote,
-                    Action = c.Action,
-                    ListCartId = c.ListCartId,
-
-                    ActivityCart = c.ActivityCart.Select(a => new ActivityCartResponse
-                    {
-                        Id = a.Id,
-                        Action = a.Action,
-                        ActivityInformation = a.ActivityInformation,
-                        UserId = a.UserId,
-                        ActivityTime = a.ActivityTime,
-                        CartId = a.CartId
-                    }).ToList()
-
-
-                }).ToList(),
-                     ActivityListCarts = listCart.ActivityListCarts?.Select(a => new ActivityListCartResponse
-                     {
-                         Id = a.Id,
-                         Action = a.Action,
-                         ActivityInformation = a.ActivityInformation,
-                         UserId = a.UserId,
-                         ActivityTime = a.ActivityTime,
-                         ListCartId = a.ListCartId
-                     }).ToList()
-
-            }).ToList();
-
-            return response;
+                return new List<ListCart>();
+            return listCarts;
         }
-
-
-        public async Task UpdateAsync(Guid cartLisrId, UpdateListCartRequest listCart, Guid userID)
+        public async Task<ListCart> GetOrThrowListCart(Guid cartListId)
         {
-            var cartList = await _listCartRepository.GetListCart(cartLisrId);
-
-            if (cartList == null)
-            {
-               throw new NotFoundException("ListCart not found");
-            }
-
-            cartList.Name = listCart.Name;
-            cartList.BoardId = listCart.BoardId;
-            cartList.UpdatedAt = DateTime.UtcNow;
-
-            await _listCartRepository.Update(cartList);
-            await AddActivityToCartList(cartList.Id, UserAction.Update, userID);
-        }
-
-        public async Task MoveToBoard(Guid listCartId, Guid boardId, Guid userID)
-        {
-            var listCart = await _listCartRepository.GetListCart(listCartId);
+            var listCart = await _listCartRepository.GetListCart(cartListId);
             if (listCart == null)
             {
                 throw new NotFoundException("ListCart not found");
             }
-            listCart.BoardId = boardId;
-            await _listCartRepository.Update(listCart);
-            await AddActivityToCartList(listCart.Id, UserAction.MoveToAtherBoard, userID);
+            return listCart;
+        }
+        public async Task<List<Cart>> GetOrThrowGartsByList(Guid cartListId)
+        {
+            var cartsByList = await _listCartRepository.GetListCartsByListId(cartListId);
+            if (cartsByList == null)
+            {
+                throw new NotFoundException("Carts not found");
+            }
+            return cartsByList;
+        }
+
+        public async Task<List<ListCart>> GetLiastCartByBoardId(Guid boardId)
+        {
+            var cartsByList = await _listCartRepository.GetLiastCartsByBoardId(boardId);
+            if (cartsByList == null)
+            {
+                throw new NotFoundException("Carts not found");
+            }
+            return cartsByList;
+        }
+
+        public async Task<ListCart> GetListCartById(Guid cartListId)
+        {
+            var listCart = await GetOrThrowListCart(cartListId);
+            return listCart;
+        }
+
+        public async Task<List<ActivityListCartResponse>> GetListCartActivityByListId(Guid cartListId)
+        {
+            var listCart = await GetOrThrowListCart(cartListId);
+            return CreateActivityListCartResponse(listCart);
+        }
+
+        private List<ActivityListCartResponse> CreateActivityListCartResponse(ListCart listCart)
+        {
+            return listCart.ActivityListCarts?.Select(a => new ActivityListCartResponse
+            {
+                Action = a.Action,
+                ActivityInformation = a.ActivityInformation,
+                ActivityTime = a.ActivityTime,
+            }).ToList();
+        }
+
+        private ListCartResponse CreateListCartResponse(ListCart listCart, List<CartResponse> carts)
+        {
+            return new ListCartResponse
+            {
+                ListCartId = listCart.Id,
+                Name = listCart.Name,
+                BoardId = listCart.BoardId,
+                UserId = listCart.UserId,
+                Carts = carts.Where(c => c.ListCartId == listCart.Id).ToList(),
+                ActivityListCarts = CreateActivityListCartResponse(listCart)
+            };
         }
     }
-
-   
 }
+//244

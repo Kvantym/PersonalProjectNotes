@@ -10,6 +10,7 @@ namespace PersonalProjectNotes.Repositories.Interfaces
         public Task<Board> GetBoard(Guid BoardID);
         public Task<List<Board>> GetBoards(Guid UserID);
         public Task AddActivity(ActivityBoard activity);
+        public Task<List<ActivityBoard>> GetActivityBoardById(Guid boardId);
 
     }
 }

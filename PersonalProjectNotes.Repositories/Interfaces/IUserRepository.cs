@@ -11,5 +11,8 @@ namespace PersonalProjectNotes.Repositories.Interfaces
         public Task DeleteAsync(Guid userId);
         public Task<ApplicationUser> GetByIdAsync(Guid userId);
         public Task<List<ApplicationUser>> GetUsersByIdsAsync(List<Guid> userIds);
+        public Task UpdateUserName(Guid userId, string newUserName);
+        public Task UpdatePassword(Guid userId, string newPassword);
+        public Task UpdateUserEmail(Guid userId, string newUserEmail);
     }
 }

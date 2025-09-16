@@ -2,6 +2,7 @@
 using PersonalProjectNotes.Data;
 using PersonalProjectNotes.Domain.Entities;
 using PersonalProjectNotes.Repositories.Interfaces;
+using System;
 
 namespace PersonalProjectNotes.Repositories.Repositories
 {
@@ -67,6 +68,21 @@ namespace PersonalProjectNotes.Repositories.Repositories
         {
             return await _context.ListCarts.AnyAsync(lc => lc.Id == listCartId);
         }
+
+        public async Task<List<ListCart>> GetLiastCartsByBoardId(Guid boardId)
+        {
+            return await _context.ListCarts.Where(lc => lc.BoardId == boardId).ToListAsync();
+        }
+
+        public async Task<List<ActivityListCart>> GetListCartActivityById(Guid listCartId)
+        {
+            return await _context.ActivityListCarts.Where(ac => ac.ListCartId == listCartId).ToListAsync();
+        }
+
+       public async Task<ListCart> GetListCartById(Guid listCartId)
+       {
+            return await _context.ListCarts.FirstOrDefaultAsync(lc => lc.Id == listCartId);
+       }
 
     }
 }

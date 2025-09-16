@@ -68,5 +68,10 @@ namespace PersonalProjectNotes.Repositories.Repositories
             _context.Boards.Update(Board);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<ActivityBoard>> GetActivityBoardById(Guid boardId)
+        {
+            return await _context.ActivitiesListBoards.Where(ab => ab.BoardId == boardId).ToListAsync();
+        }
     }
 }

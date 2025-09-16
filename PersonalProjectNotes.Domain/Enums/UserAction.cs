@@ -15,6 +15,11 @@ namespace PersonalProjectNotes.Domain.Enums
         Download,
         Upload,
         MoveToAtherCartList,
-        MoveToAtherBoard
+        MoveToAtherBoard,
+        CreateCart,
+        CreateListCart,
+        CreateBoard,
+        DeleteListCart,
+        DeleteCartWithCartList,
     }
 }

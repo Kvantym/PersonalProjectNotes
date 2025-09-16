@@ -7,10 +7,10 @@ namespace PersonalProjectNotes.Domain.Entities
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime DueDate { get; set; }
-        public Guid BoardId { get; set; }
         public Guid ListCartId { get; set; }
         public ListCart ListCart { get; set; }
         public Guid UserId { get; set; }

@@ -1,0 +1,6 @@
+services:
+  personalprojectnotes:
+    image: ${DOCKER_REGISTRY-}personalprojectnotes
+    build:
+      context: .
+      dockerfile: PersonalProjectNotes\Dockerfile

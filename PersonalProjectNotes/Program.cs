@@ -21,6 +21,17 @@ namespace PersonalProjectNotes
             var builder = WebApplication.CreateBuilder(args);
             var configuration = builder.Configuration;
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularDev",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:4200") // адреса Angular
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
+            });
+
             // Add services to the container
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
@@ -106,6 +117,8 @@ namespace PersonalProjectNotes
 
             var app = builder.Build();
 
+
+            app.UseCors("AllowAngularDev");
             // Configure middleware pipeline
             if (app.Environment.IsDevelopment())
             {

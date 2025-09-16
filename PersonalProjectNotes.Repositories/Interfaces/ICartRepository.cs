@@ -10,6 +10,8 @@ namespace PersonalProjectNotes.Repositories.Interfaces
         public Task<Cart> GetCart(Guid CartID);
         public Task<List<Cart>> GetCarts(Guid UserID);
         public Task AddActivity(ActivityCart activity);
+        public  Task<List<Cart>> GetCartsByCartList(Guid cartListId);
+        public Task<List<ActivityCart>> GetActivityCart(Guid cartId);
 
     }
 }
