@@ -1,6 +1,58 @@
+version: '3.8'
+
 services:
-  personalprojectnotes:
-    image: ${DOCKER_REGISTRY-}personalprojectnotes
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=MySuperP@ssw0rd!
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+     test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U sa -P MySuperP@ssw0rd! -Q 'SELECT 1' || exit 1"]
+     interval: 10s
+     timeout: 10s
+     retries: 10
+
+    networks:
+      - app-network
+
+  backend:
     build:
-      context: .
-      dockerfile: PersonalProjectNotes\Dockerfile
+      context: E:/MyProjects/PersonalProjectNotes
+      dockerfile: PersonalProjectNotes/Dockerfile
+    container_name: backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=PersonalProjectNotesDB;User Id=sa;Password=MySuperP@ssw0rd!;TrustServerCertificate=True;
+    ports:
+      - "5000:80"
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: E:/MyProjects/MyNotesProjectFront
+      dockerfile: Dockerfile
+    container_name: frontend
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+    networks:
+      - app-network
+
+volumes:
+  mssql-data:
+
+networks:
+  app-network:
+    driver: bridge

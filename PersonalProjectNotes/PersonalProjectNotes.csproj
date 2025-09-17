@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>98590eaa-3ea5-4735-b6f9-1613a7eb3198</UserSecretsId>
-    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
@@ -26,6 +26,9 @@
     <ProjectReference Include="..\PersonalProjectNotes.Data\PersonalProjectNotes.Data.csproj" />
     <ProjectReference Include="..\PersonalProjectNotes.Interfaces\PersonalProjectNotes.Interfaces.csproj" />
     <ProjectReference Include="..\PersonalProjectNotes.Services\PersonalProjectNotes.Services.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="..\.dockerignore" Link="PersonalProjectNotes.Data\obj\.dockerignore" />
   </ItemGroup>
 
 </Project>
