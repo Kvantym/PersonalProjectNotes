@@ -12,7 +12,7 @@ using PersonalProjectNotes.Data;
 namespace PersonalProjectNotes.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250917104233_InitialCreate")]
+    [Migration("20250924123950_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

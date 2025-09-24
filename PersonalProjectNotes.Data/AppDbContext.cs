@@ -8,7 +8,7 @@ namespace PersonalProjectNotes.Data
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
+        {          
         }
 
         public DbSet<Cart> Carts { get; set; }

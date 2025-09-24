@@ -23,15 +23,15 @@ namespace PersonalProjectNotes
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAngularDev",
-                    policy =>
-                    {
-                        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
-       .AllowAnyHeader()
-       .AllowAnyMethod();
-
-                    });
+                options.AddPolicy("AllowAngular",
+                    policy => policy
+                        .WithOrigins("http://localhost:4200")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
             });
+
+
+
 
             // Add services to the container
             builder.Services.AddControllers();
@@ -117,15 +117,24 @@ namespace PersonalProjectNotes
     });
 
             var app = builder.Build();
-
-
-            app.UseCors("AllowAngularDev");
-            // Configure middleware pipeline
-            if (app.Environment.IsDevelopment())
+            using (var scope = app.Services.CreateScope())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.Database.Migrate(); // застосовує всі pending migrations
             }
+
+
+
+
+
+
+            app.UseCors("AllowAngular");
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = "swagger"; // Swagger буде за адресою /swagger
+            });
 
             app.UseHttpsRedirection();
 
