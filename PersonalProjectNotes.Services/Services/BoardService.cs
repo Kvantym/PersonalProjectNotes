@@ -59,6 +59,10 @@ namespace PersonalProjectNotes.Services.Services
             var user = await _userService.GetOrThrowUser(userId);
 
             var board = await GetOrThrowBoard(boardId);
+            if (board.UserId != userId)
+            {
+                throw new BadRequestException("You do not have permission to view this board");
+            }
 
             var cartLists = await _listCartService.GetListCartsAsync(userId);
 
@@ -70,6 +74,11 @@ namespace PersonalProjectNotes.Services.Services
         public async Task<List<BoardResponse>> GetBoards(Guid userId)
         {
             var user = await _userService.GetOrThrowUser(userId);
+
+            if (user == null)
+            {
+                throw new NotFoundException($"User with ID {userId} not found");
+            }
 
             var boards = await GetOrThrowBoardsByUserId(userId);
 

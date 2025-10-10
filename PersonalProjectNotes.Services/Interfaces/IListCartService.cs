@@ -19,6 +19,7 @@ namespace PersonalProjectNotes.Services.Interfaces
         public Task<List<ListCart>> GetLiastCartByBoardId(Guid boardId);
         public Task<List<ActivityListCartResponse>> GetListCartActivityByListId(Guid cartListId);
         public Task<ListCart> GetListCartById(Guid cartListId);
+        public Task<bool> ListCartExists(Guid cartLisId);
 
     }
 }

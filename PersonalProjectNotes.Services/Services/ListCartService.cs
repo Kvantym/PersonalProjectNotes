@@ -45,7 +45,11 @@ namespace PersonalProjectNotes.Services.Services
         {
             var listCart = await GetOrThrowListCart(cartListId);
 
-            var cartsByList = await GetOrThrowGartsByList(cartListId);            
+            var cartsByList = await GetOrThrowGartsByList(cartListId);   
+            if (listCart.UserId != userId)
+            {
+                throw new BadRequestException("You do not have permission to delete this list cart");
+            }
 
             foreach (var cart in cartsByList)
             {
@@ -89,6 +93,10 @@ namespace PersonalProjectNotes.Services.Services
                 Name = cartList.Name,               
                 BoardId = cartList.BoardId,
             };
+            if (cartList.UserId != userID)
+            {
+                throw new BadRequestException("You do not have permission to update this list cart");
+            }
 
             cartList.Name = listCartRequest.Name;
             cartList.UpdatedAt = DateTime.Now;
@@ -101,6 +109,10 @@ namespace PersonalProjectNotes.Services.Services
         {
             var listCart = await GetOrThrowListCart(cartListId);
             var currentListCart = listCart;
+            if (listCart.UserId != userID)
+            {
+                throw new BadRequestException("You do not have permission to move this list cart");
+            }
             listCart.BoardId = boardId;
             var targetBoard = await _boardRepository.GetBoard(boardId);
             await _listCartRepository.Update(listCart);
@@ -181,6 +193,13 @@ namespace PersonalProjectNotes.Services.Services
                 Carts = carts.Where(c => c.ListCartId == listCart.Id).ToList(),
                 ActivityListCarts = CreateActivityListCartResponse(listCart)
             };
+        }
+        public async Task<bool> ListCartExists(Guid cartLisId)
+        {
+            var listCartExists = await _listCartRepository.ExistsAsync(cartLisId);
+            if (!listCartExists)
+                throw new InvalidOperationException($"ListCart with ID {cartLisId} does not exist.");
+            return listCartExists;
         }
     }
 }

@@ -14,19 +14,24 @@ namespace PersonalProjectNotes.Services.Services
         private readonly IListCartRepository _listCartRepository;
         private readonly IUserService _userService;
         private readonly IActivityService _activityService;
+        private readonly IListCartService _listCartService;
 
 
-        public CartService(ICartRepository cartRepository, IListCartRepository listCartRepository, IUserService userService, IActivityService activityService)
+        public CartService(ICartRepository cartRepository, IListCartRepository listCartRepository, IUserService userService, IActivityService activityService, IListCartService listCartService)
         {
             _cartRepository = cartRepository;
             _listCartRepository = listCartRepository;
             _userService = userService;
             _activityService = activityService;
-
+            _listCartService = listCartService;
         }
 
         public async Task CreateCart(CreateCartRequest createCartRequest, Guid userId, Guid cartListId)
         {
+            if(cartListId == Guid.Empty)
+            {
+             throw new BadRequestException("CartListId cannot be null.");
+            }
             var cart = new Cart()
             {
                 Description = createCartRequest.Description,
@@ -46,6 +51,10 @@ namespace PersonalProjectNotes.Services.Services
         public async Task DeleteCart(Guid cartId, Guid userId)
         {
             var cart = await GetOrThrowCart(cartId);
+            if (cart.UserId != userId)
+            {
+                throw new BadRequestException("You do not have permission to delete this cart");
+            }
             await _activityService.AddActivityToCartList(cart.ListCartId,UserAction.DeleteCartWithCartList, userId,deletedCart: cart);
             await _cartRepository.Delete(cart);
         }
@@ -70,7 +79,11 @@ namespace PersonalProjectNotes.Services.Services
 
             var cart = await GetOrThrowCart(cartId);
 
-            var listCartExists = await ListCartExists(updateCartRequest.ListCartId);
+            var listCartExists = await _listCartService.ListCartExists(updateCartRequest.ListCartId);
+            if (cart.UserId != userId)
+            {
+                throw new BadRequestException("You do not have permission to move this cart");
+            }
 
             var previousCartState = new Cart
             {
@@ -102,6 +115,10 @@ namespace PersonalProjectNotes.Services.Services
             var cart = await GetOrThrowCart(cartId);
             var targetList = await _listCartRepository.GetListCart(cartLisId); 
             var previousList = await _listCartRepository.GetListCart(cart.ListCartId); 
+            if (cart.UserId != userId)
+            {
+                throw new BadRequestException("You do not have permission to move this cart");
+            }
 
             var previousCartState = new Cart
             {

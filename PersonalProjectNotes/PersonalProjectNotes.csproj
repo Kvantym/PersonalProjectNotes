@@ -24,7 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PersonalProjectNotes.Data\PersonalProjectNotes.Data.csproj" />
-    <ProjectReference Include="..\PersonalProjectNotes.Interfaces\PersonalProjectNotes.Interfaces.csproj" />
     <ProjectReference Include="..\PersonalProjectNotes.Services\PersonalProjectNotes.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
