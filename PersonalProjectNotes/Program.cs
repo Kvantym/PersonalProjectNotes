@@ -11,6 +11,9 @@ using PersonalProjectNotes.Services.DI;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore.InMemory;
+
+
 
 namespace PersonalProjectNotes
 {
@@ -64,9 +67,18 @@ namespace PersonalProjectNotes
                 });
             });
 
-            // Configure DbContext
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            var useInMemory = Environment.GetEnvironmentVariable("USE_INMEMORY_DB") == "true";
+
+            if (useInMemory)
+            {
+                builder.Services.AddDbContext<AppDbContext>(options =>
+                    options.UseInMemoryDatabase("TestDb"));
+            }
+            else
+            {
+                builder.Services.AddDbContext<AppDbContext>(options =>
+                    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            }
 
             // Configure Identity with Guid keys
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
@@ -120,7 +132,7 @@ namespace PersonalProjectNotes
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                db.Database.Migrate(); // застосовує всі pending migrations
+               // db.Database.Migrate(); // застосовує всі pending migrations
             }
 
 
@@ -146,6 +158,11 @@ namespace PersonalProjectNotes
             app.MapControllers();
 
             app.Run();
+
         }
+
     }
+
 }
+public partial class Program { }
+

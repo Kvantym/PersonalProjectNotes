@@ -14,16 +14,16 @@ namespace PersonalProjectNotes.Services.Services
         private readonly IListCartRepository _listCartRepository;
         private readonly IUserService _userService;
         private readonly IActivityService _activityService;
-        private readonly IListCartService _listCartService;
+      //  private readonly IListCartService _listCartService;
 
 
-        public CartService(ICartRepository cartRepository, IListCartRepository listCartRepository, IUserService userService, IActivityService activityService, IListCartService listCartService)
+        public CartService(ICartRepository cartRepository, IListCartRepository listCartRepository, IUserService userService, IActivityService activityService)
         {
             _cartRepository = cartRepository;
             _listCartRepository = listCartRepository;
             _userService = userService;
             _activityService = activityService;
-            _listCartService = listCartService;
+          //  _listCartService = listCartService;
         }
 
         public async Task CreateCart(CreateCartRequest createCartRequest, Guid userId, Guid cartListId)
@@ -79,7 +79,7 @@ namespace PersonalProjectNotes.Services.Services
 
             var cart = await GetOrThrowCart(cartId);
 
-            var listCartExists = await _listCartService.ListCartExists(updateCartRequest.ListCartId);
+            var listCartExists = await ListCartExists(updateCartRequest.ListCartId);
             if (cart.UserId != userId)
             {
                 throw new BadRequestException("You do not have permission to move this cart");
