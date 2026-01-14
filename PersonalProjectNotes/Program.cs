@@ -125,7 +125,24 @@ namespace PersonalProjectNotes
             builder.Services.ConfigureServices(configuration);
 
             var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        // Це автоматично створить таблиці в Azure MySQL, якщо їх там немає
+        if (context.Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            context.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Помилка під час застосування міграцій бази даних.");
+    }
+}
             // --- ПОРЯДОК MIDDLEWARE ---
             app.UseCors("AllowAngular");
 
