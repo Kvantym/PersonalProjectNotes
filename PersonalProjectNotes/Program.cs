@@ -28,7 +28,7 @@ namespace PersonalProjectNotes
             {
                 options.AddPolicy("AllowAngular",
                     policy => policy
-                        .WithOrigins("http://localhost:4200")
+                        .WithOrigins("http://localhost:4200", "https://witty-pebble-0fc40b00f.1.azurestaticapps.net")
                         .AllowAnyHeader()
                         .AllowAnyMethod());
             });
@@ -132,7 +132,7 @@ namespace PersonalProjectNotes
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-               // db.Database.Migrate(); // застосовує всі pending migrations
+               // db.Database.Migrate(); // Г§Г Г±ГІГ®Г±Г®ГўГіВє ГўГ±Ві pending migrations
             }
 
 
@@ -145,12 +145,12 @@ namespace PersonalProjectNotes
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.RoutePrefix = "swagger"; // Swagger буде за адресою /swagger
+                c.RoutePrefix = "swagger"; // Swagger ГЎГіГ¤ГҐ Г§Г  Г Г¤Г°ГҐГ±Г®Гѕ /swagger
             });
 
             app.UseHttpsRedirection();
 
-            // **Правильна послідовність**
+            // **ГЏГ°Г ГўГЁГ«ГјГ­Г  ГЇГ®Г±Г«ВіГ¤Г®ГўГ­ВіГ±ГІГј**
             app.UseAuthentication();
             app.UseAuthorization();
 
