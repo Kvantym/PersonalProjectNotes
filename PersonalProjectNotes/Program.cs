@@ -76,8 +76,14 @@ namespace PersonalProjectNotes
             }
             else
             {
-                builder.Services.AddDbContext<AppDbContext>(options =>
-                    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+               // builder.Services.AddDbContext<AppDbContext>(options =>
+                  //  options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                // Замість UseSqlServer використовуємо UseMySql
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    var connectionString = configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+});
             }
 
             // Configure Identity with Guid keys
