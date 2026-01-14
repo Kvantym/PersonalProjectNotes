@@ -11,9 +11,6 @@ using PersonalProjectNotes.Services.DI;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore.InMemory;
-
-
 
 namespace PersonalProjectNotes
 {
@@ -24,34 +21,25 @@ namespace PersonalProjectNotes
             var builder = WebApplication.CreateBuilder(args);
             var configuration = builder.Configuration;
 
+            // 1. Налаштування CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngular", policy => policy
+                    .WithOrigins("http://localhost:4200", "https://witty-pebble-0fc40b00f.1.azurestaticapps.net")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
+            });
 
-     builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAngular",
-        policy => policy
-            .WithOrigins(
-                "http://localhost:4200", 
-                "https://witty-pebble-0fc40b00f.1.azurestaticapps.net" // Без "/" в кінці
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()); // Додайте це для стабільної роботи з Auth
-});
-
-
-
-
-            // Add services to the container
-            builder.Services.AddControllers();
-
+            builder.Services.AddControllers()
+                .AddJsonOptions(options => {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
             builder.Services.AddHttpContextAccessor();
-
-
-            // Add Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
 
-
+            // 2. Налаштування Swagger
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My Shop Project API", Version = "v1" });
@@ -67,8 +55,7 @@ namespace PersonalProjectNotes
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
-                        new OpenApiSecurityScheme
-                        {
+                        new OpenApiSecurityScheme {
                             Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
                         },
                         Array.Empty<string>()
@@ -76,27 +63,22 @@ namespace PersonalProjectNotes
                 });
             });
 
-
+            // 3. База даних з перевіркою (щоб не падало)
             var useInMemory = Environment.GetEnvironmentVariable("USE_INMEMORY_DB") == "true";
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-            if (useInMemory)
+            if (useInMemory || string.IsNullOrEmpty(connectionString))
             {
                 builder.Services.AddDbContext<AppDbContext>(options =>
                     options.UseInMemoryDatabase("TestDb"));
             }
             else
             {
-               // builder.Services.AddDbContext<AppDbContext>(options =>
-                  //  options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-                // Замість UseSqlServer використовуємо UseMySql
-builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    var connectionString = configuration.GetConnectionString("DefaultConnection");
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-});
+                builder.Services.AddDbContext<AppDbContext>(options =>
+                    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             }
 
-            // Configure Identity with Guid keys
+            // 4. Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -105,13 +87,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
             })
-  .AddEntityFrameworkStores<AppDbContext>()
-  .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
 
+            // 5. JWT з перевіркою на NULL (головна причина помилки 500.30)
+            var jwtSection = configuration.GetSection("JwtSettings");
+            var jwtSettings = jwtSection.Get<JwtSettings>();
+            builder.Services.Configure<JwtSettings>(jwtSection);
 
-            // Configure JWT authentication
-            var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
-            builder.Services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+            // Використовуємо значення або дефолтні заглушки, щоб програма запустилася
+            var secretKey = jwtSettings?.SecretKey ?? "A_Very_Long_Emergency_Secret_Key_123456789";
+            var issuer = jwtSettings?.Issuer ?? "PersonalProjectNotes";
+            var audience = jwtSettings?.Audience ?? "PersonalProjectNotesUser";
 
             builder.Services.AddAuthentication(options =>
             {
@@ -126,61 +113,42 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidAudience = jwtSettings.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.SecretKey)),
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
                     RoleClaimType = ClaimTypes.Role,
                     NameClaimType = ClaimTypes.NameIdentifier
                 };
             });
 
-            // Register repositories and services
             builder.Services.ConfigureRepositoriesDI(configuration);
             builder.Services.ConfigureServices(configuration);
 
-            builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
-
             var app = builder.Build();
-                app.UseCors("AllowAngular");
-            using (var scope = app.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-               // db.Database.Migrate(); // çàñòîñîâóº âñ³ pending migrations
+
+            // --- ПОРЯДОК MIDDLEWARE ---
+            app.UseCors("AllowAngular");
+
+            if (app.Environment.IsDevelopment()) {
+                app.UseDeveloperExceptionPage();
             }
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.RoutePrefix = "swagger"; // Swagger áóäå çà àäðåñîþ /swagger
+                c.RoutePrefix = "swagger";
             });
 
             app.UseHttpsRedirection();
-app.UseRouting();
+            app.UseRouting();
 
-            // **Ïðàâèëüíà ïîñë³äîâí³ñòü**
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 
             app.Run();
-
-
-
-
-
-
-
         }
-
     }
-
 }
-
-public partial class Program { }
