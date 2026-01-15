@@ -73,36 +73,36 @@ namespace PersonalProjectNotes.Data
                 .HasForeignKey(a => a.ListCartId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+// 1. Створюємо конвертер
+var guidConverter = new ValueConverter<Guid, string>(
+    v => v.ToString().ToLower(),
+    v => Guid.Parse(v)
+);
 
-            // --- Глобальні налаштування для всіх GUID ---
+foreach (var entityType in builder.Model.GetEntityTypes())
+{
+    foreach (var property in entityType.GetProperties())
+    {
+        // Перевіряємо, чи це тип Guid
+        var underlyingType = Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType;
+        
+        if (underlyingType == typeof(Guid))
+        {
+            // Налаштовуємо тип колонки
+            property.SetColumnType("char(36)");
 
-            // 1. Створюємо конвертер Guid <-> String
-            var guidConverter = new ValueConverter<Guid, string>(
-                v => v.ToString().ToLower(), // В базу: Guid стає рядком
-                v => Guid.Parse(v)           // З бази: рядок стає Guid
-            );
+            // ПРИЗНАЧАЄМО КОНВЕРТЕР ТІЛЬКИ ЯКЩО ЦЕ НЕ СИСТЕМНЕ ПОЛЕ IDENTITY, ЯКЕ МАЄ ВЛАСНИЙ МАПІНГ
+            // Це зазвичай вирішує NullReferenceException
+            property.SetValueConverter(guidConverter);
 
-            foreach (var entityType in builder.Model.GetEntityTypes())
+            if (property.IsPrimaryKey())
             {
-                foreach (var property in entityType.GetProperties())
-                {
-                    // Якщо тип властивості Guid або Nullable Guid
-                    if (property.ClrType == typeof(Guid) || property.ClrType == typeof(Guid?))
-                    {
-                        // 2. Встановлюємо тип char(36)
-                        property.SetColumnType("char(36)");
-
-                        // 3. Застосовуємо конвертер
-                        property.SetValueConverter(guidConverter);
-
-                        // 4. Якщо це первинний ключ (Id), додаємо автогенерацію на стороні MySQL
-                        if (property.IsPrimaryKey())
-                        {
-                            property.SetDefaultValueSql("(UUID())");
-                        }
-                    }
-                }
+                property.SetDefaultValueSql("(UUID())");
             }
+        }
+    }
+}
+           
         }
     }
 }
