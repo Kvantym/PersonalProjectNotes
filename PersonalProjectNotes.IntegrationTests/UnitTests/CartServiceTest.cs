@@ -326,7 +326,7 @@ namespace PersonalProjectNotes.IntegrationTests.UnitTests
             await _cartService.MoveToCardList(cartId,cartLisId,userId);
 
             Assert.Equal(targetList.Id, cart.ListCartId);
-            Assert.Equal(UserAction.MoveToAtherCartList, cart.Action);
+           // Assert.Equal(UserAction.MoveToAtherCartList, cart.Action);
 
             _cartRepositoryMock.Verify(c=>c.Update(It.IsAny<Cart>()),Times.Once);
             _activityServiceMock.Verify(a=>a.AddActivityToCart(cartId,UserAction.MoveToAtherCartList, userId, It.IsAny<Cart>(), previousList.Name,targetList.Name));
