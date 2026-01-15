@@ -1,5 +1,6 @@
 ﻿using PersonalProjectNotes.Domain.Enums;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PersonalProjectNotes.Domain.Entities
 {
