@@ -79,20 +79,24 @@ var guidConverter = new ValueConverter<Guid, string>(
     v => Guid.Parse(v)
 );
 
-foreach (var entityType in builder.Model.GetEntityTypes())
+// 2. Явно перераховуємо ваші сутності
+var entities = new[] { 
+    typeof(Board), typeof(Cart), typeof(ListCart), 
+    typeof(ActivityCart), typeof(ActivityBoard), typeof(ActivityListCart),
+    typeof(ApplicationUser), typeof(ApplicationRole) 
+};
+
+foreach (var type in entities)
 {
-    foreach (var property in entityType.GetProperties())
+    var mutableEntityType = builder.Entity(type);
+    
+    foreach (var property in mutableEntityType.Metadata.GetProperties())
     {
-        // Перевіряємо, чи це тип Guid
         var underlyingType = Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType;
-        
+
         if (underlyingType == typeof(Guid))
         {
-            // Налаштовуємо тип колонки
             property.SetColumnType("char(36)");
-
-            // ПРИЗНАЧАЄМО КОНВЕРТЕР ТІЛЬКИ ЯКЩО ЦЕ НЕ СИСТЕМНЕ ПОЛЕ IDENTITY, ЯКЕ МАЄ ВЛАСНИЙ МАПІНГ
-            // Це зазвичай вирішує NullReferenceException
             property.SetValueConverter(guidConverter);
 
             if (property.IsPrimaryKey())
