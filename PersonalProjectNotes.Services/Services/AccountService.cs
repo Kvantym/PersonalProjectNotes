@@ -8,7 +8,6 @@ using PersonalProjectNotes.Domain.Request.Account;
 using PersonalProjectNotes.Domain.Response;
 using PersonalProjectNotes.Services.Exceptions;
 using PersonalProjectNotes.Services.Interfaces;
-using System.Data.Entity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

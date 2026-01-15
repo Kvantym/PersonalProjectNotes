@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,25 +22,25 @@ namespace PersonalProjectNotes
             var builder = WebApplication.CreateBuilder(args);
             var configuration = builder.Configuration;
 
+            // 1. Налаштування CORS
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAngular",
-                    policy => policy
-                        .WithOrigins("http://localhost:4200")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
+                options.AddPolicy("AllowAngular", policy => policy
+                    .WithOrigins("http://localhost:4200", "https://witty-pebble-0fc40b00f.1.azurestaticapps.net")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
             });
 
+            builder.Services.AddControllers()
+                .AddJsonOptions(options => {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
-
-
-            // Add services to the container
-            builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
-
-
-            // Add Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
+
+            // 2. Налаштування Swagger
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My Shop Project API", Version = "v1" });
@@ -55,8 +56,7 @@ namespace PersonalProjectNotes
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
-                        new OpenApiSecurityScheme
-                        {
+                        new OpenApiSecurityScheme {
                             Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
                         },
                         Array.Empty<string>()
@@ -64,11 +64,24 @@ namespace PersonalProjectNotes
                 });
             });
 
-            // Configure DbContext
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+          // 3. База даних
+var connectionString = configuration.GetConnectionString("DefaultConnection");
+var useInMemory = Environment.GetEnvironmentVariable("USE_INMEMORY_DB") == "true";
 
-            // Configure Identity with Guid keys
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    if (useInMemory || string.IsNullOrEmpty(connectionString))
+    {
+        options.UseInMemoryDatabase("TestDb");
+    }
+    else
+    {
+        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+            mySqlOptions => mySqlOptions.MigrationsAssembly("PersonalProjectNotes.Data"));
+    }
+});
+
+            // 4. Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -77,13 +90,18 @@ namespace PersonalProjectNotes
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
             })
-  .AddEntityFrameworkStores<AppDbContext>()
-  .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
 
+            // 5. JWT з перевіркою на NULL (головна причина помилки 500.30)
+            var jwtSection = configuration.GetSection("JwtSettings");
+            var jwtSettings = jwtSection.Get<JwtSettings>();
+            builder.Services.Configure<JwtSettings>(jwtSection);
 
-            // Configure JWT authentication
-            var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
-            builder.Services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+            // Використовуємо значення або дефолтні заглушки, щоб програма запустилася
+            var secretKey = jwtSettings?.SecretKey ?? "A_Very_Long_Emergency_Secret_Key_123456789";
+            var issuer = jwtSettings?.Issuer ?? "PersonalProjectNotes";
+            var audience = jwtSettings?.Audience ?? "PersonalProjectNotesUser";
 
             builder.Services.AddAuthentication(options =>
             {
@@ -98,53 +116,58 @@ namespace PersonalProjectNotes
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidAudience = jwtSettings.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.SecretKey)),
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
                     RoleClaimType = ClaimTypes.Role,
                     NameClaimType = ClaimTypes.NameIdentifier
                 };
             });
 
-            // Register repositories and services
             builder.Services.ConfigureRepositoriesDI(configuration);
             builder.Services.ConfigureServices(configuration);
 
-            builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
-
             var app = builder.Build();
-            using (var scope = app.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                db.Database.Migrate(); // ��������� �� pending migrations
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        // Це автоматично створить таблиці в Azure MySQL, якщо їх там немає
+        if (context.Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            context.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Помилка під час застосування міграцій бази даних.");
+    }
+}
+            // --- ПОРЯДОК MIDDLEWARE ---
+            app.UseCors("AllowAngular");
+
+            if (app.Environment.IsDevelopment()) {
+                app.UseDeveloperExceptionPage();
             }
 
-
-
-
-
-
-            app.UseCors("AllowAngular");
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.RoutePrefix = "swagger"; // Swagger ���� �� ������� /swagger
+                c.RoutePrefix = "swagger";
             });
 
             app.UseHttpsRedirection();
+            app.UseRouting();
 
-            // **��������� ������������**
             app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.MapControllers();
-
+app.UseDeveloperExceptionPage();
             app.Run();
         }
     }

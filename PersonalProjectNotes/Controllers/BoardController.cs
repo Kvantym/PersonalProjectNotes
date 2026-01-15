@@ -16,12 +16,12 @@ namespace PersonalProjectNotes.Controllers
         {
             _boardService = boardService;
         }
-        [Authorize]
+       [Authorize]
         [HttpPost("create-board")]
         public async Task<IActionResult> CreateBoard([FromBody] CreateBoardRequest createBoardRequest)
         {
-            await _boardService.CreateBoard(createBoardRequest, User.GetUserId());
-            return Ok(new { message = "Board created successfully" });
+                await _boardService.CreateBoard(createBoardRequest, User.GetUserId());
+                return Ok(new { message = "Board created successfully" });        
         }
         [Authorize]
         [HttpPut("{boardId}")]

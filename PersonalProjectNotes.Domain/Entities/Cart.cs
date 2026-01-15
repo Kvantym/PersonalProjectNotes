@@ -1,5 +1,6 @@
 ﻿using PersonalProjectNotes.Domain.Enums;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PersonalProjectNotes.Domain.Entities
 {
@@ -17,7 +18,8 @@ namespace PersonalProjectNotes.Domain.Entities
         public ApplicationUser User { get; set; }
         public PriorityNote PriorityNote { get; set; }
         public StatusNote StatusNote { get; set; }
-        public UserAction Action { get; set; }
+        //[NotMapped]
+        //public UserAction Action { get; set; }
         public List<ActivityCart> ActivityCart { get; set; } = new List<ActivityCart>();
     }
 }

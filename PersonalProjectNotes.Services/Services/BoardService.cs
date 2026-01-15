@@ -32,7 +32,7 @@ namespace PersonalProjectNotes.Services.Services
                 Name = createBoardRequest.Name,
                 UserId = userId,
                 CreatedAt = createBoardRequest.CreatedAt,
-                Action = UserAction.Create,
+              //  Action = UserAction.Create,
             };
             await _boardRepository.Create(board);
             await _activityService.AddActivityToBoard(board.Id, UserAction.Create, userId);

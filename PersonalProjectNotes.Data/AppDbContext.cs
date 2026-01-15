@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PersonalProjectNotes.Domain.Entities;
 using System;
@@ -8,7 +8,7 @@ namespace PersonalProjectNotes.Data
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {          
+        {
         }
 
         public DbSet<Cart> Carts { get; set; }
@@ -20,25 +20,24 @@ namespace PersonalProjectNotes.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            // 1. Ініціалізація Identity
             base.OnModelCreating(builder);
 
-            // Cart -> ListCart (один до багатьох)
+            // 2. Налаштування зв'язків
             builder.Entity<Cart>()
                 .HasOne(c => c.ListCart)
                 .WithMany(l => l.Carts)
                 .HasForeignKey(c => c.ListCartId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade); // каскадне видалення
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Cart -> User (один до багатьох)
             builder.Entity<Cart>()
                 .HasOne(c => c.User)
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict); // користувач не видаляється разом із картами
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Board -> User (один до багатьох)
             builder.Entity<Board>()
                 .HasOne(b => b.User)
                 .WithMany()
@@ -46,37 +45,35 @@ namespace PersonalProjectNotes.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // ListCart -> Board (один до багатьох)
             builder.Entity<ListCart>()
                 .HasOne(lc => lc.Board)
                 .WithMany(b => b.ListCart)
                 .HasForeignKey(lc => lc.BoardId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade); // каскадне видалення
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // ActivityBoard -> Board
             builder.Entity<ActivityBoard>()
                 .HasOne(a => a.Board)
                 .WithMany(b => b.ActivityBoards)
                 .HasForeignKey(a => a.BoardId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade); // каскадне видалення
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // ActivityCart -> Cart
             builder.Entity<ActivityCart>()
                 .HasOne(a => a.Cart)
                 .WithMany(c => c.ActivityCart)
                 .HasForeignKey(a => a.CartId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade); // каскадне видалення
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // ActivityListCart -> ListCart
             builder.Entity<ActivityListCart>()
                 .HasOne(a => a.ListCart)
                 .WithMany(lc => lc.ActivityListCarts)
                 .HasForeignKey(a => a.ListCartId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade); // каскадне видалення
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // ТУТ ПУСТО - МИ ТИМЧАСОВО ВИДАЛИЛИ ВСІ КОНВЕРТЕРИ ДЛЯ ТЕСТУ ДЕПЛОЮ
         }
     }
 }
