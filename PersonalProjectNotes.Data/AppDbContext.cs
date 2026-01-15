@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion; // Додано для конвертера
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PersonalProjectNotes.Domain.Entities;
 using System;
 
@@ -9,7 +9,7 @@ namespace PersonalProjectNotes.Data
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {          
+        {
         }
 
         public DbSet<Cart> Carts { get; set; }
@@ -21,6 +21,7 @@ namespace PersonalProjectNotes.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            // ПЕРШИМ ДІЛОМ викликаємо base метод для ініціалізації Identity
             base.OnModelCreating(builder);
 
             // --- Налаштування зв'язків (Relationships) ---
@@ -73,40 +74,37 @@ namespace PersonalProjectNotes.Data
                 .HasForeignKey(a => a.ListCartId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-// 1. Створюємо конвертер
-var guidConverter = new ValueConverter<Guid, string>(
-    v => v.ToString().ToLower(),
-    v => Guid.Parse(v)
-);
 
-// 2. Явно перераховуємо ваші сутності
-var entities = new[] { 
-    typeof(Board), typeof(Cart), typeof(ListCart), 
-    typeof(ActivityCart), typeof(ActivityBoard), typeof(ActivityListCart),
-    typeof(ApplicationUser), typeof(ApplicationRole) 
-};
+            // --- Налаштування конвертації GUID для MySQL (char(36)) ---
 
-foreach (var type in entities)
-{
-    var mutableEntityType = builder.Entity(type);
-    
-    foreach (var property in mutableEntityType.Metadata.GetProperties())
-    {
-        var underlyingType = Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType;
+            var guidConverter = new ValueConverter<Guid, string>(
+                v => v.ToString().ToLower(),
+                v => Guid.Parse(v)
+            );
 
-        if (underlyingType == typeof(Guid))
-        {
-            property.SetColumnType("char(36)");
-            property.SetValueConverter(guidConverter);
-
-            if (property.IsPrimaryKey())
+            foreach (var entityType in builder.Model.GetEntityTypes())
             {
-                property.SetDefaultValueSql("(UUID())");
+                foreach (var property in entityType.GetProperties())
+                {
+                    // Отримуємо базовий тип (на випадок Guid?)
+                    var underlyingType = Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType;
+
+                    if (underlyingType == typeof(Guid))
+                    {
+                        // 1. Встановлюємо тип колонки
+                        property.SetColumnType("char(36)");
+
+                        // 2. Додаємо конвертер (Guid <-> string)
+                        property.SetValueConverter(guidConverter);
+
+                        // 3. Автогенерація UUID для первинних ключів
+                        if (property.IsPrimaryKey())
+                        {
+                            property.SetDefaultValueSql("(UUID())");
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-           
         }
     }
 }
