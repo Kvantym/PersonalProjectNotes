@@ -1,4 +1,5 @@
 ﻿using PersonalProjectNotes.Domain.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PersonalProjectNotes.Domain.Entities
 {
