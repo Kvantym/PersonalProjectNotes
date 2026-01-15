@@ -77,6 +77,17 @@ namespace PersonalProjectNotes.Data
                 .HasForeignKey(a => a.ListCartId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade); // каскадне видалення
+
+                foreach (var entityType in builder.Model.GetEntityTypes())
+    {
+        foreach (var property in entityType.GetProperties())
+        {
+            if (property.ClrType == typeof(Guid) || property.ClrType == typeof(Guid?))
+            {
+                property.SetColumnType("char(36)");
+            }
+        }
+    }
         }
     }
 }
