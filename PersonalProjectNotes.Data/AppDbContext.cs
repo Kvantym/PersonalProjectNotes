@@ -77,34 +77,34 @@ namespace PersonalProjectNotes.Data
 
             // --- Налаштування конвертації GUID для MySQL (char(36)) ---
 
-            var guidConverter = new ValueConverter<Guid, string>(
-                v => v.ToString().ToLower(),
-                v => Guid.Parse(v)
-            );
+          //  var guidConverter = new ValueConverter<Guid, string>(
+            //    v => v.ToString().ToLower(),
+              //  v => Guid.Parse(v)
+            //);
 
-            foreach (var entityType in builder.Model.GetEntityTypes())
-            {
-                foreach (var property in entityType.GetProperties())
-                {
+            //foreach (var entityType in builder.Model.GetEntityTypes())
+            //{
+              //  foreach (var property in entityType.GetProperties())
+                //{
                     // Отримуємо базовий тип (на випадок Guid?)
-                    var underlyingType = Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType;
+                  //  var underlyingType = Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType;
 
-                    if (underlyingType == typeof(Guid))
-                    {
+                    //if (underlyingType == typeof(Guid))
+                    //{
                         // 1. Встановлюємо тип колонки
-                        property.SetColumnType("char(36)");
+                      //  property.SetColumnType("char(36)");
 
                         // 2. Додаємо конвертер (Guid <-> string)
-                        property.SetValueConverter(guidConverter);
+                        //property.SetValueConverter(guidConverter);
 
                         // 3. Автогенерація UUID для первинних ключів
-                        if (property.IsPrimaryKey())
-                        {
+                        //if (property.IsPrimaryKey())
+                        //{
                             property.SetDefaultValueSql("(UUID())");
-                        }
-                    }
-                }
-            }
+                        //}
+                    //}
+                //}
+            //}
         }
     }
 }
