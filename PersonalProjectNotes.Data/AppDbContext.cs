@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PersonalProjectNotes.Domain.Entities;
 using System;
 
@@ -21,11 +20,10 @@ namespace PersonalProjectNotes.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            // ПЕРШИМ ДІЛОМ викликаємо base метод для ініціалізації Identity
+            // 1. Ініціалізація Identity
             base.OnModelCreating(builder);
 
-            // --- Налаштування зв'язків (Relationships) ---
-
+            // 2. Налаштування зв'язків
             builder.Entity<Cart>()
                 .HasOne(c => c.ListCart)
                 .WithMany(l => l.Carts)
@@ -75,36 +73,7 @@ namespace PersonalProjectNotes.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // --- Налаштування конвертації GUID для MySQL (char(36)) ---
-
-          //  var guidConverter = new ValueConverter<Guid, string>(
-            //    v => v.ToString().ToLower(),
-              //  v => Guid.Parse(v)
-            //);
-
-            //foreach (var entityType in builder.Model.GetEntityTypes())
-            //{
-              //  foreach (var property in entityType.GetProperties())
-                //{
-                    // Отримуємо базовий тип (на випадок Guid?)
-                  //  var underlyingType = Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType;
-
-                    //if (underlyingType == typeof(Guid))
-                    //{
-                        // 1. Встановлюємо тип колонки
-                      //  property.SetColumnType("char(36)");
-
-                        // 2. Додаємо конвертер (Guid <-> string)
-                        //property.SetValueConverter(guidConverter);
-
-                        // 3. Автогенерація UUID для первинних ключів
-                        //if (property.IsPrimaryKey())
-                        //{
-                            property.SetDefaultValueSql("(UUID())");
-                        //}
-                    //}
-                //}
-            //}
+            // ТУТ ПУСТО - МИ ТИМЧАСОВО ВИДАЛИЛИ ВСІ КОНВЕРТЕРИ ДЛЯ ТЕСТУ ДЕПЛОЮ
         }
     }
 }
