@@ -101,7 +101,7 @@ namespace PersonalProjectNotes.Services.Services
             cart.ListCartId = updateCartRequest.ListCartId;
             cart.PriorityNote = updateCartRequest.PriorityNote;
             cart.StatusNote = updateCartRequest.StatusNote;
-            cart.Action = UserAction.Update;
+           // cart.Action = UserAction.Update;
             cart.UpdatedAt = DateTime.Now;
 
             await _cartRepository.Update(cart);
@@ -126,7 +126,7 @@ namespace PersonalProjectNotes.Services.Services
             };
 
             cart.ListCartId = cartLisId;
-            cart.Action = UserAction.MoveToAtherCartList;
+          // cart.Action = UserAction.MoveToAtherCartList;
             cart.UpdatedAt = DateTime.Now;
 
             await _cartRepository.Update(cart);
@@ -174,7 +174,7 @@ namespace PersonalProjectNotes.Services.Services
             return cart.ActivityCart.Select(a => new ActivityCartResponse
             {
                 Id = a.Id,
-                Action = a.Action,
+              Action = a.Action,
                 ActivityInformation = a.ActivityInformation,
                 UserId = a.UserId,
                 ActivityTime = a.ActivityTime,
@@ -194,7 +194,7 @@ namespace PersonalProjectNotes.Services.Services
                 ListCartId = cart.ListCartId,
                 PriorityNote = cart.PriorityNote,
                 StatusNote = cart.StatusNote,
-                Action = cart.Action,
+          //      Action = cart.Action,
                 ActivityCart = CreateActivityCartResponse(cart)
             };
         }
