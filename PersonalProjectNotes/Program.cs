@@ -75,7 +75,8 @@ namespace PersonalProjectNotes
             else
             {
                 builder.Services.AddDbContext<AppDbContext>(options =>
-                    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+            b => b.MigrationsAssembly("PersonalProjectNotes.Data")));
             }
 
             // 4. Identity
