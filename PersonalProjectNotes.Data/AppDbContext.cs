@@ -78,16 +78,24 @@ namespace PersonalProjectNotes.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade); // каскадне видалення
 
-                foreach (var entityType in builder.Model.GetEntityTypes())
+                // 1. Створюємо конвертер: Guid (C#) <-> string (MySQL)
+var guidConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<Guid, string>(
+    v => v.ToString().ToLower(), // В базу йде рядок у нижньому регістрі
+    v => Guid.Parse(v)           // З бази рядок парситься назад у Guid
+);
+
+// 2. Проходимо по всіх сутностях і налаштовуємо кожен Guid
+foreach (var entityType in builder.Model.GetEntityTypes())
+{
+    foreach (var property in entityType.GetProperties())
     {
-        foreach (var property in entityType.GetProperties())
+        if (property.ClrType == typeof(Guid) || property.ClrType == typeof(Guid?))
         {
-            if (property.ClrType == typeof(Guid) || property.ClrType == typeof(Guid?))
-            {
-                property.SetColumnType("char(36)");
-            }
+            property.SetValueConverter(guidConverter); // Прив'язуємо конвертер
+            property.SetColumnType("char(36)");         // Встановлюємо тип колонки
         }
     }
+}
         }
     }
 }
