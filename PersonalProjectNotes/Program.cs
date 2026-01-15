@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -63,21 +64,22 @@ namespace PersonalProjectNotes
                 });
             });
 
-            // 3. База даних з перевіркою (щоб не падало)
-            var useInMemory = Environment.GetEnvironmentVariable("USE_INMEMORY_DB") == "true";
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+          // 3. База даних
+var connectionString = configuration.GetConnectionString("DefaultConnection");
+var useInMemory = Environment.GetEnvironmentVariable("USE_INMEMORY_DB") == "true";
 
-            if (useInMemory || string.IsNullOrEmpty(connectionString))
-            {
-                builder.Services.AddDbContext<AppDbContext>(options =>
-                    options.UseInMemoryDatabase("TestDb"));
-            }
-            else
-            {
-                builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    if (useInMemory || string.IsNullOrEmpty(connectionString))
+    {
+        options.UseInMemoryDatabase("TestDb");
+    }
+    else
+    {
         options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-            b => b.MigrationsAssembly("PersonalProjectNotes.Data")));
-            }
+            mySqlOptions => mySqlOptions.MigrationsAssembly("PersonalProjectNotes.Data"));
+    }
+});
 
             // 4. Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
