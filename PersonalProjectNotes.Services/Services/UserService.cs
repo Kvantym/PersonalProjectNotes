@@ -37,5 +37,16 @@ namespace PersonalProjectNotes.Services.Services
             var user = await GetOrThrowUser(userId);
             await _userRepository.UpdateUserEmail(userId, newUserEmail);
         }
+
+        public async Task<ApplicationUser> GetUserByName(string userName)
+        {
+            var user = await _userRepository.GetUserByName(userName);
+            return user;
+        }
+        public async Task<ApplicationUser> GetUserByEmail(string userEmail)
+        {
+            var user = await _userRepository.GetUserByEmail(userEmail);
+            return user;
+        }
     }
 }

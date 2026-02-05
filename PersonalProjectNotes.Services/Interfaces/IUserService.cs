@@ -8,6 +8,9 @@ namespace PersonalProjectNotes.Services.Interfaces
         public Task UpdateUserName(Guid userId, string newUserName);
         public Task UpdateUserPassword(Guid userId, string newUserPassword);
         public Task UpdateUserEmail(Guid userId, string newUserEmail);
+
+        public Task<ApplicationUser> GetUserByName(string userName);
+        public Task<ApplicationUser> GetUserByEmail(string userEmail);
     }
 
 }

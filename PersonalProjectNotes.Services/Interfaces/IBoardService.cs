@@ -16,5 +16,12 @@ namespace PersonalProjectNotes.Services.Interfaces
         public Task<Board> GetOrThrowBoard(Guid boardId);
         public Task<List<Board>> GetOrThrowBoardsByUserId(Guid userId);
         public Task<List<ActivityBoardResponse>> GetActivityBoardById(Guid boardId);
+
+        public Task AddColloborator(Guid boardId, string identifier, Guid whoAddColoborationId);
+        public Task<List<UserResponse>> GetAllColloborators(Guid boardId);
+
+        public Task DeleteUserFromBoardIfUserIsOwner(Guid boardId, Guid ownerId, string collaborationName);
+
+        public Task RemoveColoboratorFromBoard(Guid boardId, Guid collaborationId);
     }
 }

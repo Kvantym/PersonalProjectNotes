@@ -21,5 +21,8 @@ namespace PersonalProjectNotes.Domain.Enums
         CreateBoard,
         DeleteListCart,
         DeleteCartWithCartList,
+        RemoveUserIfYouOwner,
+        LeaveUser,
+        AddUser,
     }
 }

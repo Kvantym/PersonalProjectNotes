@@ -73,7 +73,7 @@ namespace PersonalProjectNotes.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ТУТ ПУСТО - МИ ТИМЧАСОВО ВИДАЛИЛИ ВСІ КОНВЕРТЕРИ ДЛЯ ТЕСТУ ДЕПЛОЮ
+         
         }
     }
 }

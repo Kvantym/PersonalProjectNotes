@@ -26,7 +26,7 @@ namespace PersonalProjectNotes
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngular", policy => policy
-                    .WithOrigins("http://localhost:4200", "https://witty-pebble-0fc40b00f.1.azurestaticapps.net")
+                    .WithOrigins("http://localhost:4200", "http://localhost:53126", "https://witty-pebble-0fc40b00f.1.azurestaticapps.net")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());
@@ -68,7 +68,9 @@ namespace PersonalProjectNotes
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 var useInMemory = Environment.GetEnvironmentVariable("USE_INMEMORY_DB") == "true";
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
 {
     if (useInMemory || string.IsNullOrEmpty(connectionString))
     {
@@ -76,9 +78,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
     else
     {
-        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-            mySqlOptions => mySqlOptions.MigrationsAssembly("PersonalProjectNotes.Data"));
-    }
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+            //  options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),mySqlOptions => mySqlOptions.MigrationsAssembly("PersonalProjectNotes.Data"));
+        }
 });
 
             // 4. Identity
@@ -146,6 +148,8 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Помилка під час застосування міграцій бази даних.");
     }
 }
+
+            app.UseRouting();
             // --- ПОРЯДОК MIDDLEWARE ---
             app.UseCors("AllowAngular");
 
@@ -161,7 +165,7 @@ using (var scope = app.Services.CreateScope())
             });
 
             app.UseHttpsRedirection();
-            app.UseRouting();
+            
 
             app.UseAuthentication();
             app.UseAuthorization();

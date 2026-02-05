@@ -11,6 +11,10 @@ namespace PersonalProjectNotes.Repositories.Interfaces
         public Task<List<Board>> GetBoards(Guid UserID);
         public Task AddActivity(ActivityBoard activity);
         public Task<List<ActivityBoard>> GetActivityBoardById(Guid boardId);
+        public Task AddColloborator(Board board, Guid collaboratorId);
+        public Task<List<ApplicationUser>> GetAllColloborators(Guid boardId);
+
+        public Task DeleteUserFromBoard(Board board, ApplicationUser colobarator);
 
     }
 }

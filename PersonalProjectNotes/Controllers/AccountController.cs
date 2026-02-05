@@ -74,5 +74,28 @@ namespace PersonalProjectNotes.Controllers
             return Ok(new { message = "Email updated successfully" });
         }
 
+        [Authorize]
+        [HttpGet("get-user-by-email")]
+        public async Task<IActionResult> GetUserByEmail([FromQuery] string userEmail)
+        {
+            var user = await _userService.GetUserByEmail(userEmail);
+            if (user == null)
+            {
+                return NotFound($"User with email {userEmail} not found");
+            }
+            return Ok(user);
+        }
+        [Authorize]
+        [HttpGet("get-user-by-id")]
+        public async Task<IActionResult> GetUserById([FromQuery] Guid userId)
+        {
+            var user = await _userService.GetOrThrowUser(userId);
+            if (user == null)
+            {
+                return NotFound($"User with email {userId} not found");
+            }
+            return Ok(user);
+        }
+
     }
 }

@@ -24,7 +24,7 @@ services:
 
   backend:
     build:
-      context: E:/MyProjects/PersonalProjectNotes
+      context: .
       dockerfile: PersonalProjectNotes/Dockerfile
     container_name: backend
     depends_on:
@@ -41,7 +41,7 @@ services:
 
   frontend:
     build:
-      context: E:/MyProjects/MyNotesProjectFront
+      context: "E:/MyNotesProjectFront"
       dockerfile: Dockerfile
     container_name: frontend
     depends_on:

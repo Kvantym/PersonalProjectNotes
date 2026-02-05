@@ -58,6 +58,38 @@ namespace PersonalProjectNotes.Controllers
             return Ok(result);
         }
 
+        [Authorize]
+        [HttpPost("add-collaborator/{boardId}")]
+        public async Task<IActionResult> AddCollaborator(Guid boardId, [FromQuery] string identifier)
+        {
+            
+            await _boardService.AddColloborator(boardId, identifier, User.GetUserId());
+            return Ok(new { message = $"Collaborator {identifier} added successfully" });
+        }
+        [Authorize]
+        [HttpGet("get-collaborators/{boardId}")]
+        public async Task<IActionResult> GetAllCollaborators(Guid boardId)
+        {
+            var result = await _boardService.GetAllColloborators(boardId);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpDelete("delete-collaborator/{boardId}/{collaborationName}")]
+        public async Task<IActionResult> DeleteCollaborator(Guid boardId, string collaborationName)
+        {
+            await _boardService.DeleteUserFromBoardIfUserIsOwner(boardId, User.GetUserId(), collaborationName);
+            return Ok(new { message = "Collaborator deleted successfully" });
+        }
+
+        [Authorize]
+        [HttpDelete("remove-collaborator/{boardId}")]
+        public async Task<IActionResult> RemoveCollaborator(Guid boardId)
+        {
+            await _boardService.RemoveColoboratorFromBoard(boardId, User.GetUserId());
+            return Ok(new { message = "Collaborator removed successfully" });
+        }
+
 
     }
 }

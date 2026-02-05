@@ -122,7 +122,7 @@ namespace PersonalProjectNotes.IntegrationTests.UnitTests
                 Id = boardId,
                 Name = "Original Board Name",
                 UserId = userId,
-                CreatedAt = DateTime.Now.AddDays(-1),
+                CreatedAt = DateTime.UtcNow.AddDays(-1),
             };
 
             _userServiceMock.Setup(users => users.GetOrThrowUser(userId)).ReturnsAsync( user);
@@ -148,7 +148,7 @@ namespace PersonalProjectNotes.IntegrationTests.UnitTests
                 Id = boardId,
                 Name = "Original Board Name",
                 UserId = Guid.NewGuid(),
-                CreatedAt = DateTime.Now.AddDays(-1),
+                CreatedAt = DateTime.UtcNow.AddDays(-1),
             };
 
             _userServiceMock.Setup(u=> u.GetOrThrowUser(userId)).ReturnsAsync(new ApplicationUser { Id = userId});

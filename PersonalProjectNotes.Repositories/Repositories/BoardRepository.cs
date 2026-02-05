@@ -50,7 +50,7 @@ namespace PersonalProjectNotes.Repositories.Repositories
         public async Task<List<Board>> GetBoards(Guid userId)
         {
             return await _context.Boards
-     .Where(b => b.UserId == userId)
+     .Where(b => b.UserId == userId || b.Collaborators.Contains(userId))
      .Include(b => b.ListCart) // ListCart у Board
          .ThenInclude(lc => lc.Carts) // Carts у ListCart
              .ThenInclude(c => c.ActivityCart) // ActivityCart у Cart
@@ -72,6 +72,25 @@ namespace PersonalProjectNotes.Repositories.Repositories
         public async Task<List<ActivityBoard>> GetActivityBoardById(Guid boardId)
         {
             return await _context.ActivitiesListBoards.Where(ab => ab.BoardId == boardId).ToListAsync();
+        }
+
+        public async Task AddColloborator(Board board, Guid collaboratorId)
+        {
+            board.Collaborators.Add(collaboratorId);
+            _context.Boards.Update(board);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<List<ApplicationUser>> GetAllColloborators(Guid boardId)
+        {
+            var board = await _context.Boards.Where(b => b.Id == boardId).Select(b=>b.Collaborators).FirstOrDefaultAsync();
+            return await _context.Users.Where(u => board.Contains(u.Id)).ToListAsync();
+        }
+
+        public async Task DeleteUserFromBoard(Board board, ApplicationUser colobarator)
+        {
+            board.Collaborators.Remove(colobarator.Id);
+            _context.Boards.Update(board);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PersonalProjectNotes.Data;
 using PersonalProjectNotes.Domain.Entities;
 using PersonalProjectNotes.Domain.Response;
@@ -35,10 +36,7 @@ namespace PersonalProjectNotes.Repositories.Repositories
             return user;
         }
 
-        public Task<ApplicationUser> GetByNameAsync(string userName)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public Task<List<ApplicationUser>> GetUsersByIdsAsync(List<Guid> userIds)
         {
@@ -75,6 +73,15 @@ namespace PersonalProjectNotes.Repositories.Repositories
 
             _context.Update(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<ApplicationUser> GetUserByName(string userName)
+        {
+            return await _context.Users.FirstOrDefaultAsync(user => user.UserName == userName);
+        }
+        public async Task<ApplicationUser> GetUserByEmail(string userEmail)
+        {
+            return await _context.Users.FirstOrDefaultAsync(user => user.Email == userEmail);
         }
     }
 }

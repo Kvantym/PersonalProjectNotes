@@ -80,7 +80,7 @@ namespace PersonalProjectNotes.Services.Services
             await _listCartRepository.AddActivity(activity);
         }
 
-        public async Task AddActivityToBoard(Guid boardId, UserAction userAction, Guid userId, Board? previousBoardState = null, ListCart? deleteListCart = null ,ListCart? CreatelistCart= null)
+        public async Task AddActivityToBoard(Guid boardId, UserAction userAction, Guid userId, Board? previousBoardState = null, ListCart? deleteListCart = null ,ListCart? CreatelistCart= null, ApplicationUser? coloboration = null)
         {
             var user = await _userService.GetOrThrowUser(userId);
             var board = await _boardRepository.GetBoard(boardId);
@@ -92,7 +92,11 @@ namespace PersonalProjectNotes.Services.Services
                 UserAction.CreateListCart => $"{user.UserName} створив список '{CreatelistCart?.Name}' на дошці '{board.Name}'",
                 UserAction.DeleteListCart => $"{user.UserName} видалив список '{deleteListCart?.Name}' з дошки '{board.Name}'",
                 UserAction.Update when previousBoardState != null => GenerateUpdateBoardActivity(user.UserName, previousBoardState, board),
-                _ => $"{user.UserName} виконав дію {userAction} з дошкою '{board.Name}'"
+                UserAction.RemoveUserIfYouOwner => $"{user.UserName} видалив користувача '{coloboration.UserName}'",
+                UserAction.LeaveUser => $"Користувач {user.UserName} покинив дошку",
+                UserAction.AddUser => $"{user.UserName} додав користувача '{coloboration.UserName}'",
+                _ => $"{user.UserName} виконав дію {userAction} з дошкою '{board.Name}'",
+                
             };
 
             if (string.IsNullOrEmpty(activityInfo))

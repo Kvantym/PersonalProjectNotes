@@ -1,11 +1,12 @@
-﻿using PersonalProjectNotes.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using PersonalProjectNotes.Domain.Entities;
 using PersonalProjectNotes.Domain.Response;
 
 namespace PersonalProjectNotes.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        public Task<ApplicationUser> GetByNameAsync(string userName);
+      
         public Task UpdateAsync(ApplicationUser user);
         public Task<List<UserResponse>> GetAllAsync();
         public Task DeleteAsync(Guid userId);
@@ -14,5 +15,9 @@ namespace PersonalProjectNotes.Repositories.Interfaces
         public Task UpdateUserName(Guid userId, string newUserName);
         public Task UpdatePassword(Guid userId, string newPassword);
         public Task UpdateUserEmail(Guid userId, string newUserEmail);
+        public Task<ApplicationUser> GetUserByName(string userName);
+
+        public Task<ApplicationUser> GetUserByEmail(string userEmail);
+
     }
 }

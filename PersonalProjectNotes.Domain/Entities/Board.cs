@@ -9,6 +9,7 @@ namespace PersonalProjectNotes.Domain.Entities
         public string Name { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public List<Guid> Collaborators { get; set; } = new List<Guid>();
         public Guid UserId { get; set; }
         public ApplicationUser User { get; set; }
        // [NotMapped]
