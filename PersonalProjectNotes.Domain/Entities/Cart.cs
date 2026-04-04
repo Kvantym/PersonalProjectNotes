@@ -16,6 +16,7 @@ namespace PersonalProjectNotes.Domain.Entities
         public ListCart ListCart { get; set; }
         public Guid UserId { get; set; }
         public ApplicationUser User { get; set; }
+        public bool IsArchived { get; set; }
         public PriorityNote PriorityNote { get; set; }
         public StatusNote StatusNote { get; set; }
         //[NotMapped]

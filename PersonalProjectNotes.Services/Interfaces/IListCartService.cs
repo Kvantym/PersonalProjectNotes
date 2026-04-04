@@ -16,10 +16,12 @@ namespace PersonalProjectNotes.Services.Interfaces
         public Task MoveToBoard(Guid listCartId, Guid boardId, Guid userId);
         public Task<ListCart> GetOrThrowListCart(Guid listCartId);
         public Task<List<Cart>> GetOrThrowGartsByList(Guid listCartId);
-        public Task<List<ListCart>> GetLiastCartByBoardId(Guid boardId);
+        //  public Task<List<ListCart>> GetLiastCartByBoardId(Guid boardId);
+        public Task<List<ListCart>> GetListCartByBoardId(Guid boardId, bool isArchive);
         public Task<List<ActivityListCartResponse>> GetListCartActivityByListId(Guid cartListId);
         public Task<ListCart> GetListCartById(Guid cartListId);
         public Task<bool> ListCartExists(Guid cartLisId);
+        public Task UpdateCartListArchiveStatus(Guid userId,Guid listCartId, bool isArchive);
 
     }
 }

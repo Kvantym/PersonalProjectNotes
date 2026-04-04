@@ -16,7 +16,8 @@ namespace PersonalProjectNotes.Services.Interfaces
         public Task MoveToCardList(Guid cartId, Guid cartLisID, Guid userId);
         public Task<Cart> GetOrThrowCart(Guid cartId);
         public Task<List<Cart>> GetOrThrowCartsByUserId(Guid userId);
-        public  Task<List<Cart>> GetCartsByListCart(Guid ListCartId);
+        public  Task<List<Cart>> GetCartsByListCart(Guid ListCartId, bool isArchive);
         public Task<List<ActivityCartResponse>> GetActivityCart(Guid cartId);
+        public Task UpdateCartArchiveStatus(Guid userId, Guid cartId, bool isArchive);
     }
 }

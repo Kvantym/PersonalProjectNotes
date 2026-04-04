@@ -48,7 +48,7 @@ namespace PersonalProjectNotes.Controllers
         [HttpGet("list-cart-by-boardid/{boardId}")]
         public async Task<IActionResult> GetListCartByBoardId(Guid boardId)
         {
-            return Ok(await _listCartService.GetLiastCartByBoardId(boardId));
+            return Ok(await _listCartService.GetListCartByBoardId(boardId,false));
         }
         [Authorize]
         [HttpGet("list-cart-by-user")]
@@ -71,7 +71,29 @@ namespace PersonalProjectNotes.Controllers
             var result = await _listCartService.GetListCartActivityByListId(cartListId);
             return Ok(result);
         }
-   
+
+        [Authorize]
+        [HttpPut("add-cartList-to-archive/{listCartId}")]
+        public async Task<IActionResult> AddCartListToArchiveStatus(Guid listCartId)
+        {
+            await _listCartService.UpdateCartListArchiveStatus(User.GetUserId(), listCartId, true);
+            return Ok(new { message = "CartList archive status updated successfully" });
+        }
+        [Authorize]
+        [HttpPut("remove-cartList-from-archive/{listCartId}")]
+        public async Task<IActionResult> RemoveCartListToArchiveStatus(Guid listCartId)
+        {
+            await _listCartService.UpdateCartListArchiveStatus(User.GetUserId(), listCartId, false);
+            return Ok(new { message = "CartList archive status updated successfully" });
+        }
+        [Authorize]
+        [HttpGet("list-cart-by-boardid-if-archive/{boardId}")]
+        public async Task<IActionResult> GetListCartByBoardIdIfArchive(Guid boardId)
+        {
+            return Ok(await _listCartService.GetListCartByBoardId(boardId, true));
+        }
+
+
 
     }
 }

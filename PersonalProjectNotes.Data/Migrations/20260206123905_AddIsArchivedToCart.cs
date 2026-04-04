@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PersonalProjectNotes.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialPostgresV3 : Migration
+    public partial class AddIsArchivedToCart : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -164,10 +164,11 @@ namespace PersonalProjectNotes.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Collaborators = table.Column<List<Guid>>(type: "uuid[]", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsArchived = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,7 +190,7 @@ namespace PersonalProjectNotes.Data.Migrations
                     Action = table.Column<int>(type: "integer", nullable: false),
                     ActivityInformation = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ActivityTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ActivityTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -210,8 +211,9 @@ namespace PersonalProjectNotes.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     BoardId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    IsArchived = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -239,7 +241,7 @@ namespace PersonalProjectNotes.Data.Migrations
                     Action = table.Column<int>(type: "integer", nullable: false),
                     ActivityInformation = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ActivityTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ActivityTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -259,11 +261,12 @@ namespace PersonalProjectNotes.Data.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     ListCartId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsArchived = table.Column<bool>(type: "boolean", nullable: false),
                     PriorityNote = table.Column<int>(type: "integer", nullable: false),
                     StatusNote = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -293,7 +296,7 @@ namespace PersonalProjectNotes.Data.Migrations
                     Action = table.Column<int>(type: "integer", nullable: false),
                     ActivityInformation = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ActivityTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ActivityTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {

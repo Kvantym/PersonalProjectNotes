@@ -12,8 +12,11 @@ namespace PersonalProjectNotes.Repositories.Interfaces
         public Task AddActivity(ActivityListCart activity);
         public Task<List<Cart>> GetListCartsByListId(Guid ListCartId);
        public Task<bool> ExistsAsync(Guid listCartId);
-        public Task<List<ListCart>> GetLiastCartsByBoardId(Guid boardId);
+        //public Task<List<ListCart>> GetLiastCartsByBoardId(Guid boardId);
         public Task<List<ActivityListCart>> GetListCartActivityById(Guid listCartId);
         public Task<ListCart> GetListCartById(Guid listCartId);
+
+        public Task UpdateCartListArchiveStatus(ListCart listCart, bool isArchive);
+        public Task<List<ListCart>> GetListCartsByBoardIdAndIsArchive(Guid boardId, bool isArchive);
     }
 }

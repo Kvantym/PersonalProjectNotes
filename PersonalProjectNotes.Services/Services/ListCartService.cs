@@ -150,9 +150,9 @@ namespace PersonalProjectNotes.Services.Services
             return cartsByList;
         }
 
-        public async Task<List<ListCart>> GetLiastCartByBoardId(Guid boardId)
+        public async Task<List<ListCart>> GetListCartByBoardId(Guid boardId, bool isArchive)
         {
-            var cartsByList = await _listCartRepository.GetLiastCartsByBoardId(boardId);
+            var cartsByList = await _listCartRepository.GetListCartsByBoardIdAndIsArchive(boardId, isArchive);
             if (cartsByList == null)
             {
                 throw new NotFoundException("Carts not found");
@@ -200,6 +200,16 @@ namespace PersonalProjectNotes.Services.Services
             if (!listCartExists)
                 throw new InvalidOperationException($"ListCart with ID {cartLisId} does not exist.");
             return listCartExists;
+        }
+
+        public async Task UpdateCartListArchiveStatus(Guid userId, Guid listCartId, bool isArchive)
+        {
+            var listCart =  await GetOrThrowListCart(listCartId);
+            if (listCart.UserId != userId)
+            {
+                throw new BadRequestException("You do not have permission to update this list cart");
+            }
+            await _listCartRepository.UpdateCartListArchiveStatus(listCart, isArchive);
         }
     }
 }

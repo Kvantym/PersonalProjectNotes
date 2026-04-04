@@ -37,16 +37,16 @@ namespace PersonalProjectNotes.Repositories.Repositories
             return await _context.Carts.Include(ac=> ac.ActivityCart)
                 .FirstOrDefaultAsync(c => c.Id == cartId);
         }
-        public async Task<List<Cart>> GetCartsByCartList(Guid cartListId)
+        public async Task<List<Cart>> GetCartsByCartList(Guid cartListId, bool isArchive)
         {
-            return await _context.Carts.Where(c => c.ListCartId == cartListId).ToListAsync();
+            return await _context.Carts.Where(c => c.ListCartId == cartListId && c.IsArchived == isArchive).ToListAsync();
         }
 
 
-        public async Task<List<Cart>> GetCarts(Guid userID)
-        {
-            return await _context.Carts.Include(ac=> ac.ActivityCart).Where(c=> c.UserId== userID).ToListAsync();
-        }
+        //public async Task<List<Cart>> GetCarts(Guid userID)
+        //{
+        //    return await _context.Carts.Include(ac=> ac.ActivityCart).Where(c=> c.UserId== userID).ToListAsync();
+        //}
 
         public async Task Update(Cart cart)
         {
@@ -57,6 +57,16 @@ namespace PersonalProjectNotes.Repositories.Repositories
         public async Task<List<ActivityCart>> GetActivityCart(Guid cartId)
         {
             return await _context.ActivitiesCarts.Where(ac => ac.CartId == cartId).ToListAsync();
+        }
+        public async Task UpdateCartArchiveStatus(Cart cart, bool isArchive)
+        {
+             cart.IsArchived = isArchive;
+            _context.Carts.Update(cart);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<List<Cart>> GetCarts(Guid userId, bool isArchive)
+        {
+            return await _context.Carts.Include(ac => ac.ActivityCart).Where(c => c.UserId == userId && c.IsArchived == isArchive).ToListAsync();
         }
     }
 }

@@ -12,6 +12,7 @@
         public ApplicationUser User { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public bool IsArchived { get; set; }
         public ICollection<ActivityListCart> ActivityListCarts { get; set; } = new List<ActivityListCart>();
 
         public ICollection<Cart> Carts { get; set; } = new List<Cart>();

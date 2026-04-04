@@ -141,9 +141,9 @@ namespace PersonalProjectNotes.Services.Services
             return listCartExists;
         }
 
-        public async Task<List<Cart>> GetCartsByListCart(Guid ListCartId)
+        public async Task<List<Cart>> GetCartsByListCart(Guid ListCartId, bool isArchive)
         {
-            var carts = await _cartRepository.GetCartsByCartList(ListCartId);
+            var carts = await _cartRepository.GetCartsByCartList(ListCartId, isArchive);
             if (carts == null || !carts.Any())
             {
                 return new List<Cart>();
@@ -162,7 +162,7 @@ namespace PersonalProjectNotes.Services.Services
         }
         public async Task<List<Cart>> GetOrThrowCartsByUserId(Guid userId)
         {
-            var carts = await _cartRepository.GetCarts(userId);
+            var carts = await _cartRepository.GetCarts(userId,false);
             if (carts == null || !carts.Any())
             {
                 return new List<Cart>();
@@ -216,6 +216,17 @@ namespace PersonalProjectNotes.Services.Services
                 ActivityTime = ac.ActivityTime,
                 CartId = ac.CartId
             }).ToList();
+        }
+
+        public async Task UpdateCartArchiveStatus(Guid userId, Guid cartId, bool isArchive)
+        {
+            var cart = await GetOrThrowCart(cartId);
+            if (cart.UserId != userId)
+            {
+                throw new BadRequestException("You do not have permission to archive/unarchive this cart");
+            }
+
+            await _cartRepository.UpdateCartArchiveStatus(cart, isArchive);
         }
     }
 }

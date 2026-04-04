@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PersonalProjectNotes.Domain.Request.Board;
 using PersonalProjectNotes.Services;
 using PersonalProjectNotes.Services.Interfaces;
@@ -8,7 +9,7 @@ namespace PersonalProjectNotes.Controllers
 {
     [ApiController]
     [Route("api/board")]
-    public class BoardController: ControllerBase
+    public class BoardController : ControllerBase
     {
         private readonly IBoardService _boardService;
 
@@ -16,12 +17,12 @@ namespace PersonalProjectNotes.Controllers
         {
             _boardService = boardService;
         }
-       [Authorize]
+        [Authorize]
         [HttpPost("create-board")]
         public async Task<IActionResult> CreateBoard([FromBody] CreateBoardRequest createBoardRequest)
         {
-                await _boardService.CreateBoard(createBoardRequest, User.GetUserId());
-                return Ok(new { message = "Board created successfully" });        
+            await _boardService.CreateBoard(createBoardRequest, User.GetUserId());
+            return Ok(new { message = "Board created successfully" });
         }
         [Authorize]
         [HttpPut("{boardId}")]
@@ -45,10 +46,10 @@ namespace PersonalProjectNotes.Controllers
         }
 
         [Authorize]
-        [HttpGet("board-by-user")] 
+        [HttpGet("board-by-user")]
         public async Task<IActionResult> GetBoardsByUser()
         {
-            return Ok(await _boardService.GetBoards(User.GetUserId()));
+            return Ok(await _boardService.GetBoards(User.GetUserId(),false));
         }
         [Authorize]
         [HttpGet("get-activity-board/{boardId}")]
@@ -62,7 +63,7 @@ namespace PersonalProjectNotes.Controllers
         [HttpPost("add-collaborator/{boardId}")]
         public async Task<IActionResult> AddCollaborator(Guid boardId, [FromQuery] string identifier)
         {
-            
+
             await _boardService.AddColloborator(boardId, identifier, User.GetUserId());
             return Ok(new { message = $"Collaborator {identifier} added successfully" });
         }
@@ -90,6 +91,28 @@ namespace PersonalProjectNotes.Controllers
             return Ok(new { message = "Collaborator removed successfully" });
         }
 
+
+        [Authorize]
+        [HttpPost("archive-board/{boardId}")]
+        public async Task<IActionResult> ArchiveBoard(Guid boardId)
+        {
+            await _boardService.ToggleArchiveStatus(User.GetUserId(), boardId, true);
+            return Ok(new { message = "Board archived successfully" });
+        }
+
+        [Authorize]
+        [HttpPost("unarchive-board/{boardId}")]
+        public async Task<IActionResult> UnarchiveBoard(Guid boardId)
+        {
+            await _boardService.ToggleArchiveStatus(User.GetUserId(), boardId, false);
+            return Ok(new { message = "Board unarchived successfully" });
+        }
+        [Authorize]
+        [HttpGet("board-by-user-if-isArchive-true")]
+        public async Task<IActionResult> GetBoardsByUserIfIsArchive()
+        {
+            return Ok(await _boardService.GetBoards(User.GetUserId(),true));
+        }
 
     }
 }

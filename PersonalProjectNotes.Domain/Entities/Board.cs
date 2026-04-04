@@ -12,6 +12,7 @@ namespace PersonalProjectNotes.Domain.Entities
         public List<Guid> Collaborators { get; set; } = new List<Guid>();
         public Guid UserId { get; set; }
         public ApplicationUser User { get; set; }
+        public bool IsArchived { get; set; }
        // [NotMapped]
       //  public UserAction Action { get; set; }
         public ICollection<ListCart> ListCart { get; set; } = new List<ListCart>();

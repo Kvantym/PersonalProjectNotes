@@ -15,6 +15,10 @@ namespace PersonalProjectNotes.Repositories.Interfaces
         public Task<List<ApplicationUser>> GetAllColloborators(Guid boardId);
 
         public Task DeleteUserFromBoard(Board board, ApplicationUser colobarator);
+        public Task ToggleArchiveStatus(Board board, bool status);
+
+        public Task<List<Board>> GetArchivedBoardsByUserIdAndArchiveStatus(Guid userId, bool isArchive);
+
 
     }
 }

@@ -92,5 +92,25 @@ namespace PersonalProjectNotes.Repositories.Repositories
             _context.Boards.Update(board);
             await _context.SaveChangesAsync();
         }
+
+        public async Task ToggleArchiveStatus(Board board, bool status)
+        {
+            board.IsArchived = status;
+            _context.Boards.Update(board);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Board>> GetArchivedBoardsByUserIdAndArchiveStatus(Guid userId, bool isArchive)
+        {
+            return await _context.Boards.AsNoTracking()
+     .Where(b => (b.UserId == userId || b.Collaborators.Contains(userId)) && b.IsArchived == isArchive)
+     .Include(b => b.ListCart) 
+         .ThenInclude(lc => lc.Carts) 
+             .ThenInclude(c => c.ActivityCart) 
+     .Include(b => b.ListCart) 
+         .ThenInclude(lc => lc.ActivityListCarts)
+     .Include(b => b.ActivityBoards).AsSplitQuery()
+     .ToListAsync();
+        }
     }
 }

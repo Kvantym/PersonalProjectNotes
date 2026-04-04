@@ -4,5 +4,6 @@ namespace PersonalProjectNotes.Domain.Entities
 {
     public class ApplicationUser : IdentityUser<Guid>
     {
+        
     }
 }

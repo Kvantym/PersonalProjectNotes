@@ -24,5 +24,7 @@ namespace PersonalProjectNotes.Domain.Enums
         RemoveUserIfYouOwner,
         LeaveUser,
         AddUser,
+        Archived,
+        UnArchived,
     }
 }

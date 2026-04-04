@@ -94,6 +94,8 @@ namespace PersonalProjectNotes.Services.Services
                 UserAction.Update when previousBoardState != null => GenerateUpdateBoardActivity(user.UserName, previousBoardState, board),
                 UserAction.RemoveUserIfYouOwner => $"{user.UserName} видалив користувача '{coloboration.UserName}'",
                 UserAction.LeaveUser => $"Користувач {user.UserName} покинив дошку",
+                UserAction.Archived => $"Користувач {user.UserName} переніс дошку в архів",
+                UserAction.UnArchived => $"Користувач {user.UserName} виніс дошку з архіву",
                 UserAction.AddUser => $"{user.UserName} додав користувача '{coloboration.UserName}'",
                 _ => $"{user.UserName} виконав дію {userAction} з дошкою '{board.Name}'",
                 
