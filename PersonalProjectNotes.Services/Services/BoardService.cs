@@ -275,6 +275,28 @@ namespace PersonalProjectNotes.Services.Services
 
             return boardsResponse;
         }
+
+        public async Task<List<BoardResponse>> SearchBoardsByName(Guid userId, string boardName, bool isArchive)
+        {
+            var user = await _userService.GetOrThrowUser(userId);
+
+            if (boardName == null || boardName.Length == 0)
+            {
+              return await GetBoards(userId, isArchive);
+            }
+
+            var boards = await _boardRepository.SearchBoardsByName(userId, boardName, isArchive);
+
+            return boards.Select(board => new BoardResponse
+            {
+                Id = board.Id,
+                Name = board.Name,
+                CreatedAt = board.CreatedAt,
+                UpdatedAt = board.UpdatedAt,
+                UserId = board.UserId,
+                IsArchive = board.IsArchived
+            }).ToList();
+        }
     }
     
     }

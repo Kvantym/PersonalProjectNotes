@@ -17,6 +17,7 @@ namespace PersonalProjectNotes.Data
         public DbSet<ActivityCart> ActivitiesCarts { get; set; }
         public DbSet<ActivityBoard> ActivitiesListBoards { get; set; }
         public DbSet<ActivityListCart> ActivityListCarts { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -73,7 +74,18 @@ namespace PersonalProjectNotes.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-         
+            builder.Entity<Comment>()
+    .HasOne<ApplicationUser>()
+    .WithMany()
+    .HasForeignKey(c => c.UserId)
+    .OnDelete(DeleteBehavior.Restrict); 
+
+            builder.Entity<Comment>()
+                .HasOne<Cart>()
+                .WithMany() 
+                .HasForeignKey(c => c.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

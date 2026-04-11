@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PersonalProjectNotes.Domain.Request.Board;
 using PersonalProjectNotes.Services;
 using PersonalProjectNotes.Services.Interfaces;
+using System.IO.Compression;
 
 namespace PersonalProjectNotes.Controllers
 {
@@ -49,7 +50,7 @@ namespace PersonalProjectNotes.Controllers
         [HttpGet("board-by-user")]
         public async Task<IActionResult> GetBoardsByUser()
         {
-            return Ok(await _boardService.GetBoards(User.GetUserId(),false));
+            return Ok(await _boardService.GetBoards(User.GetUserId(), false));
         }
         [Authorize]
         [HttpGet("get-activity-board/{boardId}")]
@@ -111,7 +112,14 @@ namespace PersonalProjectNotes.Controllers
         [HttpGet("board-by-user-if-isArchive-true")]
         public async Task<IActionResult> GetBoardsByUserIfIsArchive()
         {
-            return Ok(await _boardService.GetBoards(User.GetUserId(),true));
+            return Ok(await _boardService.GetBoards(User.GetUserId(), true));
+        }
+
+        [HttpGet("get-search-board")]
+        public async Task<IActionResult> GetSearchBoard([FromQuery] string? searchName, bool isArchive)
+        {
+            var result = await _boardService.SearchBoardsByName(User.GetUserId(), searchName, isArchive);
+            return Ok(result);
         }
 
     }

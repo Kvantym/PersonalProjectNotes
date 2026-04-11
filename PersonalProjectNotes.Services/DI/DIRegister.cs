@@ -15,6 +15,7 @@ namespace PersonalProjectNotes.Services.DI
             services.AddScoped<IListCartService, ListCartService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IActivityService, ActivityService>();
+            services.AddScoped<ICommentServices, CommentServices>();
             return services;
         }
     }

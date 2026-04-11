@@ -130,6 +130,8 @@ var useInMemory = Environment.GetEnvironmentVariable("USE_INMEMORY_DB") == "true
 
             builder.Services.ConfigureRepositoriesDI(configuration);
             builder.Services.ConfigureServices(configuration);
+            builder.Services.AddHttpClient();
+            builder.Services.AddControllers();
 
             var app = builder.Build();
 using (var scope = app.Services.CreateScope())

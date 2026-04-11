@@ -1,4 +1,5 @@
 ﻿using PersonalProjectNotes.Domain.Entities;
+using PersonalProjectNotes.Domain.Enums;
 
 namespace PersonalProjectNotes.Repositories.Interfaces
 {
@@ -15,6 +16,10 @@ namespace PersonalProjectNotes.Repositories.Interfaces
         public Task UpdateCartArchiveStatus(Cart cart, bool isArchive);
 
         public Task<List<Cart>> GetCarts(Guid userId,bool isArchive);
+
+      //  public Task<List<Cart>> SearchCartByName(Guid ListCartId, string cartName, bool isArchive);
+
+        public Task<List<Cart>> GetCartWithFilter(Guid ListCartId, string searchTerm, bool isArchive, PriorityNote? priority, StatusNote? status, DateTime? DueDate, DateTime? CreatedAt);
 
 
     }

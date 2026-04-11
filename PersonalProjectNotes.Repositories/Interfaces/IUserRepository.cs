@@ -16,7 +16,6 @@ namespace PersonalProjectNotes.Repositories.Interfaces
         public Task UpdatePassword(Guid userId, string newPassword);
         public Task UpdateUserEmail(Guid userId, string newUserEmail);
         public Task<ApplicationUser> GetUserByName(string userName);
-
         public Task<ApplicationUser> GetUserByEmail(string userEmail);
 
     }

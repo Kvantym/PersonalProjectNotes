@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PersonalProjectNotes.Domain.Enums;
 using PersonalProjectNotes.Domain.Request.Cart;
 using PersonalProjectNotes.Services;
 using PersonalProjectNotes.Services.Interfaces;
@@ -55,21 +56,21 @@ namespace PersonalProjectNotes.Controllers
         [HttpGet("carts-by-user")]
         public async Task<IActionResult> GetCarts()
         {
-            var result =await _cartService.GetCarts(User.GetUserId());
+            var result = await _cartService.GetCarts(User.GetUserId());
             return Ok(result);
         }
         [Authorize]
         [HttpPut("move-to-cart-list{CartListId}")]
         public async Task<IActionResult> MoveToCartList(Guid cartId, Guid CartListId)
         {
-           await _cartService.MoveToCardList(cartId, CartListId,User.GetUserId());
+            await _cartService.MoveToCardList(cartId, CartListId, User.GetUserId());
             return Ok(new { message = "Cart move to list successfully" });
         }
         [Authorize]
         [HttpGet("get-activity-cart/{cartId}")]
         public async Task<IActionResult> GetActivityFromCart(Guid cartId)
         {
-          var result =  await _cartService.GetActivityCart(cartId);
+            var result = await _cartService.GetActivityCart(cartId);
             return Ok(result);
         }
 
@@ -90,7 +91,30 @@ namespace PersonalProjectNotes.Controllers
         [HttpGet("carts-by-list-cartId-isArchive/{listcartId}")]
         public async Task<IActionResult> GetCartByListCartIdIsArchive([FromRoute] Guid listcartId)
         {
-            var result = await _cartService.GetCartsByListCart(listcartId,true);
+            var result = await _cartService.GetCartsByListCart(listcartId, true);
+            return Ok(result);
+        }
+
+        [HttpGet("search-cart-by-filter")]
+        public async Task<IActionResult> SearchCartByName(
+            [FromQuery] Guid listCartId,
+            [FromQuery] string? cartName,
+            [FromQuery] bool isArchive,
+            [FromQuery] PriorityNote? priority,
+            [FromQuery] StatusNote? status,
+            [FromQuery] DateTime? dueDate,
+            [FromQuery] DateTime? createdAt)
+        {
+            // Тепер ми передаємо всі 7 параметрів у сервіс
+            var result = await _cartService.SearchCartsByFilter(
+                listCartId,
+                cartName,
+                isArchive,
+                priority,
+                status,
+                dueDate,
+                createdAt);
+
             return Ok(result);
         }
 

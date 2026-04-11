@@ -211,6 +211,16 @@ namespace PersonalProjectNotes.Services.Services
             }
             await _listCartRepository.UpdateCartListArchiveStatus(listCart, isArchive);
         }
+
+        public async Task<List<ListCart>> SearchListCartByName(Guid boardId, string cartName, bool isArchive)
+        {
+            if (cartName == null || cartName.Length == 0)
+            {
+                return await GetListCartByBoardId(boardId, isArchive);
+            }
+
+            return await _listCartRepository.SearchListCartByName(boardId, cartName, isArchive);
+        }
     }
 }
 //244

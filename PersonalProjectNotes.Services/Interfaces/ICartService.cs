@@ -19,5 +19,6 @@ namespace PersonalProjectNotes.Services.Interfaces
         public  Task<List<Cart>> GetCartsByListCart(Guid ListCartId, bool isArchive);
         public Task<List<ActivityCartResponse>> GetActivityCart(Guid cartId);
         public Task UpdateCartArchiveStatus(Guid userId, Guid cartId, bool isArchive);
+        public Task<List<Cart>> SearchCartsByFilter(Guid ListCartId, string searchTerm, bool isArchive, PriorityNote? priority, StatusNote? status, DateTime? DueDate, DateTime? CreatedAt);
     }
 }

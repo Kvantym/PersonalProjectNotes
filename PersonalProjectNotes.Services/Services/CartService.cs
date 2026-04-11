@@ -228,6 +228,11 @@ namespace PersonalProjectNotes.Services.Services
 
             await _cartRepository.UpdateCartArchiveStatus(cart, isArchive);
         }
+
+        public async Task<List<Cart>> SearchCartsByFilter(Guid ListCartId, string searchTerm, bool isArchive, PriorityNote? priority, StatusNote? status, DateTime? DueDate, DateTime? CreatedAt)
+        {
+            return await _cartRepository.GetCartWithFilter(ListCartId, searchTerm?.Trim(), isArchive, priority, status, DueDate, CreatedAt);
+        }
     }
 }
 //263

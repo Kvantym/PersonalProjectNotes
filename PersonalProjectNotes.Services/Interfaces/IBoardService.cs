@@ -25,5 +25,6 @@ namespace PersonalProjectNotes.Services.Interfaces
         public Task RemoveColoboratorFromBoard(Guid boardId, Guid collaborationId);
         public Task ToggleArchiveStatus(Guid userId, Guid boardId, bool isArchive);
         public Task<List<BoardResponse>> GetBoards(Guid userId, bool isArchive);
+        public Task<List<BoardResponse>> SearchBoardsByName(Guid userId,string boardName, bool isArchive);
     }
 }

@@ -22,6 +22,7 @@ namespace PersonalProjectNotes.Services.Interfaces
         public Task<ListCart> GetListCartById(Guid cartListId);
         public Task<bool> ListCartExists(Guid cartLisId);
         public Task UpdateCartListArchiveStatus(Guid userId,Guid listCartId, bool isArchive);
+        public Task<List<ListCart>> SearchListCartByName(Guid boardId, string cartName, bool isArchive);
 
     }
 }

@@ -19,6 +19,7 @@ namespace PersonalProjectNotes.Repositories.Interfaces
 
         public Task<List<Board>> GetArchivedBoardsByUserIdAndArchiveStatus(Guid userId, bool isArchive);
 
+        public Task<List<Board>> SearchBoardsByName(Guid userId, string boardName,bool isArchive);
 
     }
 }

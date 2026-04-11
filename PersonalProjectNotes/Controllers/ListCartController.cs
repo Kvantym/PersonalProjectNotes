@@ -92,8 +92,11 @@ namespace PersonalProjectNotes.Controllers
         {
             return Ok(await _listCartService.GetListCartByBoardId(boardId, true));
         }
-
-
-
+        [HttpGet("search-listcart-by-name")]
+        public async Task<IActionResult> SearchCartByName(Guid boardId, string cartName, bool isArchive)
+        {
+            var result = await _listCartService.SearchListCartByName(boardId, cartName, isArchive);
+            return Ok(result);
+        }
     }
 }

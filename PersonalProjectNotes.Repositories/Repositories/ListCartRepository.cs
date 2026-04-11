@@ -86,19 +86,39 @@ namespace PersonalProjectNotes.Repositories.Repositories
 
         public async Task UpdateCartListArchiveStatus(ListCart listCart, bool isArchive)
         {
-           listCart.IsArchived = isArchive;
+            listCart.IsArchived = isArchive;
+            if (listCart.Carts != null)
+            {
+                foreach (var cart in listCart.Carts)
+                {
+                    cart.IsArchived = isArchive;
+                }
+            }
             _context.ListCarts.Update(listCart);
             await _context.SaveChangesAsync();
         }
         public async Task<List<ListCart>> GetListCartsByBoardIdAndIsArchive(Guid boardId, bool isArchive)
         {
             return await _context.ListCarts
-          .Include(lc => lc.Carts) // Завантажуємо картки
-              .ThenInclude(c => c.ActivityCart) // Завантажуємо активності карток
-          .Include(lc => lc.ActivityListCarts) // Завантажуємо активності списку
+          .Include(lc => lc.Carts) 
+              .ThenInclude(c => c.ActivityCart) 
+          .Include(lc => lc.ActivityListCarts) 
           .Where(lc => lc.BoardId == boardId && lc.IsArchived == isArchive)
           .AsNoTracking()
           .ToListAsync();
+        }
+
+        public async Task<List<ListCart>> SearchListCartByName(Guid boardId, string cartName, bool isArchive)
+        {
+            var searchTerm = cartName.ToLower();
+            return await _context.ListCarts
+         .Include(lc => lc.Carts) 
+             .ThenInclude(c => c.ActivityCart) 
+         .Include(lc => lc.ActivityListCarts) 
+         .Where(lc => lc.BoardId == boardId &&
+                      lc.IsArchived == isArchive &&
+                      lc.Name.ToLower().Contains(searchTerm))
+         .ToListAsync();
         }
     }
 

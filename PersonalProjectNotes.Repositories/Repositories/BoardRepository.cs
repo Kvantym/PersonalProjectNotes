@@ -2,6 +2,7 @@
 using PersonalProjectNotes.Domain.Entities;
 using PersonalProjectNotes.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace PersonalProjectNotes.Repositories.Repositories
@@ -111,6 +112,23 @@ namespace PersonalProjectNotes.Repositories.Repositories
          .ThenInclude(lc => lc.ActivityListCarts)
      .Include(b => b.ActivityBoards).AsSplitQuery()
      .ToListAsync();
+        }
+
+        public async Task<List<Board>> SearchBoardsByName(Guid userId, string boardName, bool isArchive)
+        {
+            var lowerName = boardName.ToLower();
+
+            var searchResults = await _context.Boards.Where(b => (b.UserId == userId || b.Collaborators.Contains(userId)) 
+                && b.IsArchived == isArchive 
+                && b.Name.ToLower().Contains(lowerName))
+                .Include(b => b.ListCart)
+                    .ThenInclude(lc => lc.Carts)
+                        .ThenInclude(c => c.ActivityCart)
+                .Include(b => b.ListCart)
+                    .ThenInclude(lc => lc.ActivityListCarts)
+                .Include(b => b.ActivityBoards).AsSplitQuery()
+                .ToListAsync();
+            return searchResults;
         }
     }
 }

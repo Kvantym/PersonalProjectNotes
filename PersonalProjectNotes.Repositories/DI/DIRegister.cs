@@ -13,6 +13,7 @@ namespace PersonalProjectNotes.Repositories.DI
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IListCartRepository, ListCartRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
 
             return services;
         }

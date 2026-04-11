@@ -18,5 +18,6 @@ namespace PersonalProjectNotes.Repositories.Interfaces
 
         public Task UpdateCartListArchiveStatus(ListCart listCart, bool isArchive);
         public Task<List<ListCart>> GetListCartsByBoardIdAndIsArchive(Guid boardId, bool isArchive);
+        public Task<List<ListCart>> SearchListCartByName(Guid boardId, string cartName, bool isArchive);
     }
 }
