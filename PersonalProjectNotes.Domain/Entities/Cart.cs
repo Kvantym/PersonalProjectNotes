@@ -19,8 +19,6 @@ namespace PersonalProjectNotes.Domain.Entities
         public bool IsArchived { get; set; }
         public PriorityNote PriorityNote { get; set; }
         public StatusNote StatusNote { get; set; }
-        //[NotMapped]
-        //public UserAction Action { get; set; }
         public List<ActivityCart> ActivityCart { get; set; } = new List<ActivityCart>();
     }
 }
