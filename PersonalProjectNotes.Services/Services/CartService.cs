@@ -14,7 +14,6 @@ namespace PersonalProjectNotes.Services.Services
         private readonly IListCartRepository _listCartRepository;
         private readonly IUserService _userService;
         private readonly IActivityService _activityService;
-      //  private readonly IListCartService _listCartService;
 
 
         public CartService(ICartRepository cartRepository, IListCartRepository listCartRepository, IUserService userService, IActivityService activityService)
@@ -23,7 +22,6 @@ namespace PersonalProjectNotes.Services.Services
             _listCartRepository = listCartRepository;
             _userService = userService;
             _activityService = activityService;
-          //  _listCartService = listCartService;
         }
 
         public async Task CreateCart(CreateCartRequest createCartRequest, Guid userId, Guid cartListId)
@@ -101,7 +99,6 @@ namespace PersonalProjectNotes.Services.Services
             cart.ListCartId = updateCartRequest.ListCartId;
             cart.PriorityNote = updateCartRequest.PriorityNote;
             cart.StatusNote = updateCartRequest.StatusNote;
-           // cart.Action = UserAction.Update;
             cart.UpdatedAt = DateTime.Now;
 
             await _cartRepository.Update(cart);
@@ -126,7 +123,6 @@ namespace PersonalProjectNotes.Services.Services
             };
 
             cart.ListCartId = cartLisId;
-          // cart.Action = UserAction.MoveToAtherCartList;
             cart.UpdatedAt = DateTime.Now;
 
             await _cartRepository.Update(cart);
@@ -194,7 +190,6 @@ namespace PersonalProjectNotes.Services.Services
                 ListCartId = cart.ListCartId,
                 PriorityNote = cart.PriorityNote,
                 StatusNote = cart.StatusNote,
-          //      Action = cart.Action,
                 ActivityCart = CreateActivityCartResponse(cart)
             };
         }
@@ -235,4 +230,4 @@ namespace PersonalProjectNotes.Services.Services
         }
     }
 }
-//263
+

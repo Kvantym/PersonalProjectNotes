@@ -43,12 +43,6 @@ namespace PersonalProjectNotes.Repositories.Repositories
             return await _context.Carts.Where(c => c.ListCartId == cartListId && c.IsArchived == isArchive).ToListAsync();
         }
 
-
-        //public async Task<List<Cart>> GetCarts(Guid userID)
-        //{
-        //    return await _context.Carts.Include(ac=> ac.ActivityCart).Where(c=> c.UserId== userID).ToListAsync();
-        //}
-
         public async Task Update(Cart cart)
         {
             _context.Carts.Update(cart);
@@ -70,16 +64,12 @@ namespace PersonalProjectNotes.Repositories.Repositories
             return await _context.Carts.Include(ac => ac.ActivityCart).Where(c => c.UserId == userId && c.IsArchived == isArchive).ToListAsync();
         }
 
-        //public async Task<List<Cart>> SearchCartByName(Guid ListCartId, string cartName, bool isArchive)
-        //{
-        //    var searchTerm = cartName.ToLower();
-        //    var searchCart = await _context.Carts.Where(c => c.ListCartId == ListCartId && c.IsArchived == isArchive && c.Name.ToLower().Contains(searchTerm)).ToListAsync();
-        //    return searchCart;
-        //}
-
         public async Task<List<Cart>> GetCartWithFilter(Guid ListCartId, string searchTerm, bool isArchive, PriorityNote? priority, StatusNote? status, DateTime? DueDate, DateTime? CreatedAt)
         {
-            var query = _context.Carts.Where(c => c.ListCartId == ListCartId).AsQueryable();
+
+            var query = _context.Carts
+                .Where(c => c.ListCartId == ListCartId && c.IsArchived == isArchive)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {

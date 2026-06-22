@@ -22,7 +22,6 @@ namespace PersonalProjectNotes
             var builder = WebApplication.CreateBuilder(args);
             var configuration = builder.Configuration;
 
-            // 1. Налаштування CORS
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngular", policy => policy
@@ -42,7 +41,6 @@ namespace PersonalProjectNotes
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddEndpointsApiExplorer();
 
-            // 2. Налаштування Swagger
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My Shop Project API", Version = "v1" });
@@ -66,7 +64,6 @@ namespace PersonalProjectNotes
                 });
             });
 
-          // 3. База даних
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 var useInMemory = Environment.GetEnvironmentVariable("USE_INMEMORY_DB") == "true";
 
@@ -85,7 +82,6 @@ var useInMemory = Environment.GetEnvironmentVariable("USE_INMEMORY_DB") == "true
         }
 });
 
-            // 4. Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -97,12 +93,10 @@ var useInMemory = Environment.GetEnvironmentVariable("USE_INMEMORY_DB") == "true
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
-            // 5. JWT з перевіркою на NULL (головна причина помилки 500.30)
             var jwtSection = configuration.GetSection("JwtSettings");
             var jwtSettings = jwtSection.Get<JwtSettings>();
             builder.Services.Configure<JwtSettings>(jwtSection);
 
-            // Використовуємо значення або дефолтні заглушки, щоб програма запустилася
             var secretKey = jwtSettings?.SecretKey ?? "A_Very_Long_Emergency_Secret_Key_123456789";
             var issuer = jwtSettings?.Issuer ?? "PersonalProjectNotes";
             var audience = jwtSettings?.Audience ?? "PersonalProjectNotesUser";
@@ -140,7 +134,6 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<AppDbContext>();
-        // Це автоматично створить таблиці в Azure MySQL, якщо їх там немає
         if (context.Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
         {
             context.Database.Migrate();
@@ -154,7 +147,6 @@ using (var scope = app.Services.CreateScope())
 }
 
             app.UseRouting();
-            // --- ПОРЯДОК MIDDLEWARE ---
             app.UseCors("AllowAngular");
 
             if (app.Environment.IsDevelopment()) {

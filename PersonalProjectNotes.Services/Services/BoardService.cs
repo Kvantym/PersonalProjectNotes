@@ -26,7 +26,6 @@ namespace PersonalProjectNotes.Services.Services
 
         public async Task CreateBoard(CreateBoardRequest createBoardRequest, Guid userId)
         {
-            // var user = await _userService.GetOrThrowUser(userId);
 
             var board = new Board()
             {
@@ -34,7 +33,6 @@ namespace PersonalProjectNotes.Services.Services
                 UserId = userId,
                 CreatedAt = createBoardRequest.CreatedAt,
                 IsArchived = false
-                //  Action = UserAction.Create,
             };
             await _boardRepository.Create(board);
             await _activityService.AddActivityToBoard(board.Id, UserAction.Create, userId);
@@ -42,8 +40,6 @@ namespace PersonalProjectNotes.Services.Services
 
         public async Task DeleteBoard(Guid boardId, Guid userId)
         {
-           // var user = await _userService.GetOrThrowUser(userId);
-
             var board = await GetOrThrowBoard(boardId);
 
             if (board.UserId == userId)
@@ -58,8 +54,6 @@ namespace PersonalProjectNotes.Services.Services
 
         public async Task<BoardResponse> GetBoard(Guid boardId, Guid userId)
         {
-           // var user = await _userService.GetOrThrowUser(userId);
-
             var board = await GetOrThrowBoard(boardId);
             if (board.UserId != userId && !board.Collaborators.Contains(userId))
             {
@@ -73,27 +67,8 @@ namespace PersonalProjectNotes.Services.Services
             return boardResponse;
         }
 
-        //public async Task<List<BoardResponse>> GetBoards(Guid userId)
-        //{
-        //  //  var user = await _userService.GetOrThrowUser(userId);
-
-        //    //if (user == null)
-        //    //{
-        //    //    throw new NotFoundException($"User with ID {userId} not found");
-        //    //}
-
-        //    var boards = await GetOrThrowBoardsByUserId(userId);
-
-        //    var cartLists = await _listCartService.GetListCartsAsync(userId);
-
-        //    var boardsResponse = boards.Select(board => CreateBoardResponse(board, cartLists)).ToList();
-          
-        //    return boardsResponse;
-        //}
-
         public async Task UpdateBoard(Guid boardId, UpdateBoardRequest updateBoardRequest, Guid userId)
         {
-           // var user = await _userService.GetOrThrowUser(userId);
 
             var board = await GetOrThrowBoard(boardId);
             var previousBoardState = new Board
@@ -241,7 +216,6 @@ namespace PersonalProjectNotes.Services.Services
 
         public async Task ToggleArchiveStatus(Guid userId, Guid boardId, bool isArchive)
         {
-           // var user = await _userService.GetOrThrowUser(userId);
             var board = await GetOrThrowBoard(boardId);
 
             if (board.UserId == userId)
@@ -260,13 +234,6 @@ namespace PersonalProjectNotes.Services.Services
 
         public async Task<List<BoardResponse>> GetBoards(Guid userId, bool isArchive)
         {
-            //  var user = await _userService.GetOrThrowUser(userId);
-
-            //if (user == null)
-            //{
-            //    throw new NotFoundException($"User with ID {userId} not found");
-            //}
-
             var boards = await GetOrThrowBoardsByUserId(userId, isArchive);
 
             var cartLists = await _listCartService.GetListCartsAsync(userId);

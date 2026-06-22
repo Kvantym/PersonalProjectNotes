@@ -52,12 +52,12 @@ namespace PersonalProjectNotes.Repositories.Repositories
         {
             return await _context.Boards
      .Where(b => b.UserId == userId || b.Collaborators.Contains(userId))
-     .Include(b => b.ListCart) // ListCart у Board
-         .ThenInclude(lc => lc.Carts) // Carts у ListCart
-             .ThenInclude(c => c.ActivityCart) // ActivityCart у Cart
-     .Include(b => b.ListCart) // ще раз підтягуємо ActivityListCarts
+     .Include(b => b.ListCart) 
+         .ThenInclude(lc => lc.Carts) 
+             .ThenInclude(c => c.ActivityCart)
+     .Include(b => b.ListCart) 
          .ThenInclude(lc => lc.ActivityListCarts)
-     .Include(b => b.ActivityBoards) // ActivityBoards у Board
+     .Include(b => b.ActivityBoards) 
      .ToListAsync();
 
         }

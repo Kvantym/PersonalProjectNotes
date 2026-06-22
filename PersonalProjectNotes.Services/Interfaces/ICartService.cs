@@ -12,7 +12,6 @@ namespace PersonalProjectNotes.Services.Interfaces
         public Task DeleteCart(Guid cartId, Guid userId);
         public Task<CartResponse> GetCart(Guid cartId);
         public Task<List<CartResponse>> GetCarts(Guid userId);
-       // public Task AddActivityToCart(Guid cartId, UserAction userAction, Guid userId, Cart? previousCartState = null, string? previousListName = null, string? targetListName = null);
         public Task MoveToCardList(Guid cartId, Guid cartLisID, Guid userId);
         public Task<Cart> GetOrThrowCart(Guid cartId);
         public Task<List<Cart>> GetOrThrowCartsByUserId(Guid userId);

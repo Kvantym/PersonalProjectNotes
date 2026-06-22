@@ -105,7 +105,6 @@ namespace PersonalProjectNotes.Controllers
             [FromQuery] DateTime? dueDate,
             [FromQuery] DateTime? createdAt)
         {
-            // Тепер ми передаємо всі 7 параметрів у сервіс
             var result = await _cartService.SearchCartsByFilter(
                 listCartId,
                 cartName,

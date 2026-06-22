@@ -52,7 +52,6 @@ namespace PersonalProjectNotes.Repositories.Repositories
                 .ToListAsync();
         }
 
-
         public async Task Update(ListCart Listcart)
         {
             _context.ListCarts.Update(Listcart);
@@ -68,11 +67,6 @@ namespace PersonalProjectNotes.Repositories.Repositories
         {
             return await _context.ListCarts.AnyAsync(lc => lc.Id == listCartId);
         }
-
-        //public async Task<List<ListCart>> GetLiastCartsByBoardId(Guid boardId)
-        //{
-        //    return await _context.ListCarts.Where(lc => lc.BoardId == boardId).ToListAsync();
-        //}
 
         public async Task<List<ActivityListCart>> GetListCartActivityById(Guid listCartId)
         {

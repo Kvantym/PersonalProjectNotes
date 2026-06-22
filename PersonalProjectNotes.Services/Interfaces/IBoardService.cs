@@ -11,8 +11,6 @@ namespace PersonalProjectNotes.Services.Interfaces
         public Task UpdateBoard(Guid boardId, UpdateBoardRequest updateBoardRequest, Guid userId);
         public Task DeleteBoard(Guid boardId, Guid userId);
         public Task<BoardResponse> GetBoard(Guid boardId, Guid userId);
-       // public Task<List<BoardResponse>> GetBoards(Guid userId);
-     //   public Task AddActivityToBoard(Guid boardId, UserAction userAction, Guid userId, Board? previousBoardState = null, ListCart? deleteListCart = null);
         public Task<Board> GetOrThrowBoard(Guid boardId);
         public Task<List<Board>> GetOrThrowBoardsByUserId(Guid userId, bool isArchive);
         public Task<List<ActivityBoardResponse>> GetActivityBoardById(Guid boardId);

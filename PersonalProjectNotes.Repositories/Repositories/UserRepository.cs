@@ -19,7 +19,6 @@ namespace PersonalProjectNotes.Repositories.Repositories
             _passwordHasher = passwordHasher;
 
         }
-
         public Task DeleteAsync(Guid userId)
         {
             throw new NotImplementedException();
@@ -35,8 +34,6 @@ namespace PersonalProjectNotes.Repositories.Repositories
             var user = await _context.Users.FindAsync(userId);
             return user;
         }
-
-       
 
         public Task<List<ApplicationUser>> GetUsersByIdsAsync(List<Guid> userIds)
         {

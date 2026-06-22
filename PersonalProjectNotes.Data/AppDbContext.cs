@@ -21,10 +21,8 @@ namespace PersonalProjectNotes.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            // 1. Ініціалізація Identity
             base.OnModelCreating(builder);
 
-            // 2. Налаштування зв'язків
             builder.Entity<Cart>()
                 .HasOne(c => c.ListCart)
                 .WithMany(l => l.Carts)

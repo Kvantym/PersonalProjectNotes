@@ -6,7 +6,6 @@ namespace PersonalProjectNotes.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-      
         public Task UpdateAsync(ApplicationUser user);
         public Task<List<UserResponse>> GetAllAsync();
         public Task DeleteAsync(Guid userId);
